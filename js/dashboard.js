@@ -651,6 +651,12 @@ function toggleFAB() {
   document.getElementById('fabMain')?.classList.toggle('open', fabOpen);
 }
 
+function closeFAB() {
+  fabOpen = false;
+  document.getElementById('fabMenu')?.classList.remove('open');
+  document.getElementById('fabMain')?.classList.remove('open');
+}
+
 // ===== SETTINGS =====
 function loadSettingsDisplay() {
   document.getElementById('settingNama').textContent = currentClient?.nama_bisnes || '-';

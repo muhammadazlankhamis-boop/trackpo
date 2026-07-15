@@ -18,7 +18,7 @@ function openTopupModal(editId = null) {
     }
   }
 
-  toggleFAB();
+  closeFAB();
   document.getElementById('modalTopup').classList.add('open');
 }
 

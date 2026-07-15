@@ -35,7 +35,7 @@ function openMarketingModal(editId = null) {
     if (record) populateMarketingForm(record);
   }
 
-  toggleFAB();
+  closeFAB();
   document.getElementById('modalMarketing').classList.add('open');
 }
 

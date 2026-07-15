@@ -19,7 +19,7 @@ function openSaleModal(editId = null) {
     if (record) populateSaleForm(record);
   }
 
-  toggleFAB();
+  closeFAB();
   document.getElementById('modalSale').classList.add('open');
 }
 
