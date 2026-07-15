@@ -365,18 +365,25 @@ async function updateBalanceKPI() {
 
   // History 5 topup
   const histEl = document.getElementById('topupHistory');
-  const recent = bajetData.slice(0, 5);
-  if (recent.length === 0) {
-    histEl.innerHTML = '<div style="font-size:12px;color:var(--text-secondary);font-weight:600;margin-bottom:8px;">5 Topup Terkini</div><div style="color:var(--text-secondary);font-size:13px;">Tiada rekod topup</div>';
+  const isAdmin = currentProfile?.role === 'admin';
+
+  if (bajetData.length === 0) {
+    histEl.innerHTML = '<div style="font-size:12px;color:var(--text-secondary);font-weight:600;margin-bottom:8px;">Rekod Topup</div><div style="color:var(--text-secondary);font-size:13px;">Tiada rekod topup</div>';
   } else {
-    histEl.innerHTML = '<div style="font-size:12px;color:var(--text-secondary);font-weight:600;margin-bottom:8px;">5 Topup Terkini</div>' +
-      recent.map(t => `
+    histEl.innerHTML = '<div style="font-size:12px;color:var(--text-secondary);font-weight:600;margin-bottom:8px;">Rekod Topup</div>' +
+      bajetData.map(t => `
         <div class="topup-item">
           <div>
             <div class="topup-amount">+ ${formatRM(t.jumlah)}</div>
             <div class="topup-date">${t.nota || '-'}</div>
           </div>
-          <div class="topup-date">${formatDate(t.created_at)}</div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="topup-date">${formatDate(t.tarikh || t.created_at)}</div>
+            ${isAdmin ? `
+              <button class="action-btn" onclick="editTopup('${t.id}')" title="Edit">✏️</button>
+              <button class="action-btn delete" onclick="deleteTopup('${t.id}')" title="Padam">🗑️</button>
+            ` : ''}
+          </div>
         </div>
       `).join('');
   }
