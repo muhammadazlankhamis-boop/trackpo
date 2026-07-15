@@ -162,3 +162,7 @@ async function deleteSale(id) {
   showToast('Data sale berjaya dipadam', 'success');
   await loadAllData();
 }
+
+// Expose to global scope
+window.editSale = editSale;
+window.deleteSale = deleteSale;

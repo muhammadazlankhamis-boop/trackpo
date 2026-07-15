@@ -468,22 +468,12 @@ function renderSaleTable() {
         <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;" title="${sebab}">${sebab || '-'}</td>
         <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;" title="${d.nota || ''}">${d.nota || '-'}</td>
         <td style="white-space:nowrap;">
-          <button class="action-btn" data-action="edit-sale" data-id="${d.id}" style="font-size:18px;padding:8px 12px;">✏️</button>
-          <button class="action-btn delete" data-action="delete-sale" data-id="${d.id}" style="font-size:18px;padding:8px 12px;">🗑️</button>
+          <button onclick="editSale('${d.id}')" style="background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.4);color:#C9A84C;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:13px;margin-right:4px;">Edit</button>
+          <button onclick="deleteSale('${d.id}')" style="background:rgba(248,81,73,0.15);border:1px solid rgba(248,81,73,0.4);color:#F85149;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:13px;">Padam</button>
         </td>
       </tr>
     `;
   }).join('');
-
-  // Event delegation
-  tbody.onclick = (e) => {
-    const btn = e.target.closest('[data-action]');
-    if (!btn) return;
-    const id = btn.dataset.id;
-    const action = btn.dataset.action;
-    if (action === 'edit-sale') editSale(id);
-    if (action === 'delete-sale') deleteSale(id);
-  };
 
   // Pagination
   const totalPages = Math.ceil(saleData.length / PER_PAGE);
@@ -532,8 +522,8 @@ function renderMarketingTable() {
         <td style="max-width:100px;overflow:hidden;text-overflow:ellipsis;">${d.nota || '-'}</td>
         <td style="white-space:nowrap;">
           ${showActions ? `
-            <button class="action-btn" data-action="edit-mkt" data-id="${d.id}" style="font-size:18px;padding:8px 12px;">✏️</button>
-            <button class="action-btn delete" data-action="delete-mkt" data-id="${d.id}" style="font-size:18px;padding:8px 12px;">🗑️</button>
+            <button onclick="editMarketing('${d.id}')" style="background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.4);color:#C9A84C;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:13px;margin-right:4px;">Edit</button>
+            <button onclick="deleteMarketing('${d.id}')" style="background:rgba(248,81,73,0.15);border:1px solid rgba(248,81,73,0.4);color:#F85149;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:13px;">Padam</button>
           ` : '-'}
         </td>
       </tr>
@@ -546,18 +536,7 @@ function renderMarketingTable() {
     renderMarketingTable();
   });
 
-  // Event delegation for marketing table
-  const mtbody = document.getElementById('tableMarketingBody');
-  if (mtbody) {
-    mtbody.onclick = (e) => {
-      const btn = e.target.closest('[data-action]');
-      if (!btn) return;
-      const id = btn.dataset.id;
-      const action = btn.dataset.action;
-      if (action === 'edit-mkt') editMarketing(id);
-      if (action === 'delete-mkt') deleteMarketing(id);
-    };
-  }
+
 }
 
 function renderPagination(containerId, currentPage, totalPages, onPageChange) {

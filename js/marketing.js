@@ -229,3 +229,7 @@ async function deleteMarketing(id) {
   showToast('Data marketing berjaya dipadam', 'success');
   await loadAllData();
 }
+
+// Expose to global scope
+window.editMarketing = editMarketing;
+window.deleteMarketing = deleteMarketing;
