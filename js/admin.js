@@ -10,21 +10,28 @@ document.addEventListener('DOMContentLoaded', async () => {
   loadTheme();
   showLoading();
 
-  const session = await requireAuth();
-  if (!session) return;
+  try {
+    const session = await requireAuth();
+    if (!session) { hideLoading(); return; }
 
-  adminProfile = await requireRole('admin');
-  if (!adminProfile) return;
+    adminProfile = await requireRole('admin');
+    if (!adminProfile) { hideLoading(); return; }
 
-  document.getElementById('adminName').textContent = adminProfile.nama || 'Admin';
-  document.getElementById('adminAvatar').textContent = (adminProfile.nama || 'A')[0].toUpperCase();
+    document.getElementById('adminName').textContent = adminProfile.nama || 'Admin';
+    document.getElementById('adminAvatar').textContent = (adminProfile.nama || 'A')[0].toUpperCase();
 
-  const savedTheme = localStorage.getItem('trackpo_theme') || 'dark';
-  const toggle = document.getElementById('adminThemeToggle');
-  if (toggle) toggle.checked = savedTheme === 'dark';
+    const savedTheme = localStorage.getItem('trackpo_theme') || 'dark';
+    const toggle = document.getElementById('adminThemeToggle');
+    if (toggle) toggle.checked = savedTheme === 'dark';
 
-  await loadAdminDashboard();
-  hideLoading();
+    await loadAdminDashboard();
+
+  } catch (err) {
+    console.error('Admin init error:', err);
+    showToast('Ralat memuatkan panel admin', 'error');
+  } finally {
+    hideLoading();
+  }
 });
 
 // ===== SECTION NAVIGATION =====
