@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (currentProfile.role === 'admin' && clientIdParam) {
     // Admin buka dashboard client tertentu
-    const { data: client } = await supabase
+    const { data: client } = await sbClient
       .from('clients')
       .select('*')
       .eq('id', clientIdParam)
@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   } else {
     // Client biasa
-    const { data: client } = await supabase
+    const { data: client } = await sbClient
       .from('clients')
       .select('*')
       .eq('id', currentProfile.client_id)
@@ -117,7 +117,7 @@ async function loadAllData() {
 
 // ===== LOAD TETAPAN =====
 async function loadTetapan() {
-  const { data } = await supabase
+  const { data } = await sbClient
     .from('tetapan_client')
     .select('*')
     .eq('client_id', currentClient.id)
@@ -179,7 +179,7 @@ async function loadMarketingData(start, end) {
 
 // ===== LOAD BAJET =====
 async function loadBajetData() {
-  const { data, error } = await supabase
+  const { data, error } = await sbClient
     .from('bajet')
     .select('*')
     .eq('client_id', currentClient.id)
@@ -201,7 +201,7 @@ function updatePeriodLabel() {
 
 // ===== LAST UPDATE INFO =====
 async function updateLastUpdateInfo() {
-  const { data: lastSale } = await supabase
+  const { data: lastSale } = await sbClient
     .from('data_sale')
     .select('created_at')
     .eq('client_id', currentClient.id)
@@ -209,7 +209,7 @@ async function updateLastUpdateInfo() {
     .limit(1)
     .single();
 
-  const { data: lastMarketing } = await supabase
+  const { data: lastMarketing } = await sbClient
     .from('data_marketing')
     .select('created_at')
     .eq('client_id', currentClient.id)
@@ -324,7 +324,7 @@ function updateKPICards() {
 
 async function updateBalanceKPI() {
   // Balance = Total Topup (all time) - Total Spend+SST (all time)
-  const { data: allMarketing } = await supabase
+  const { data: allMarketing } = await sbClient
     .from('data_marketing')
     .select('spend_sst')
     .eq('client_id', currentClient.id);
@@ -716,14 +716,14 @@ async function loadWeekly() {
   showLoading();
 
   // Current week data
-  const { data: currSale } = await supabase
+  const { data: currSale } = await sbClient
     .from('data_sale')
     .select('*')
     .eq('client_id', currentClient.id)
     .gte('tarikh', start)
     .lte('tarikh', end);
 
-  const { data: currMarketing } = await supabase
+  const { data: currMarketing } = await sbClient
     .from('data_marketing')
     .select('*')
     .eq('client_id', currentClient.id)
@@ -738,14 +738,14 @@ async function loadWeekly() {
   const prevStart = toInputDate(new Date(startDate.setDate(startDate.getDate() - duration)));
   const prevEnd = toInputDate(new Date(endDate.setDate(endDate.getDate() - duration)));
 
-  const { data: prevSale } = await supabase
+  const { data: prevSale } = await sbClient
     .from('data_sale')
     .select('*')
     .eq('client_id', currentClient.id)
     .gte('tarikh', prevStart)
     .lte('tarikh', prevEnd);
 
-  const { data: prevMarketing } = await supabase
+  const { data: prevMarketing } = await sbClient
     .from('data_marketing')
     .select('*')
     .eq('client_id', currentClient.id)
@@ -906,7 +906,7 @@ async function loadComparison() {
 
 // ===== POST LIST DATALIST =====
 async function loadPostList() {
-  const { data } = await supabase
+  const { data } = await sbClient
     .from('post_list')
     .select('nama_post')
     .eq('client_id', currentClient.id)

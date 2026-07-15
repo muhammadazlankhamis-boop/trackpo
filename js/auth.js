@@ -52,7 +52,7 @@ async function logout() {
 
 // Update last login
 async function updateLastLogin(userId) {
-  await supabase
+  await sbClient
     .from('profiles')
     .update({ last_login: new Date().toISOString() })
     .eq('id', userId);
@@ -72,7 +72,7 @@ async function createClientUser(email, password, clientId, nama) {
   if (error) return { error };
 
   // Insert profile
-  const { error: profileError } = await supabase
+  const { error: profileError } = await sbClient
     .from('profiles')
     .insert({
       id: data.user.id,
@@ -89,7 +89,7 @@ async function createClientUser(email, password, clientId, nama) {
 
 // Log activity
 async function logActivity(userId, clientId, actionType, description, metadata = {}) {
-  await supabase
+  await sbClient
     .from('activity_log')
     .insert({
       user_id: userId,

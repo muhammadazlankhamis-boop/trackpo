@@ -22,7 +22,7 @@ async function saveTopup() {
 
   showLoading();
 
-  const { error } = await supabase
+  const { error } = await sbClient
     .from('bajet')
     .insert({
       client_id: currentClient.id,
