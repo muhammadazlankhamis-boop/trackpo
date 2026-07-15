@@ -55,58 +55,45 @@ async function loadAdminDashboard() {
 
   allClients = clients || [];
 
-  // Stats
   const aktif = allClients.filter(c => c.status === 'Aktif').length;
   document.getElementById('statTotalClient').textContent = aktif;
+  document.getElementById('statAlerts').textContent = 0;
+  document.getElementById('statStale').textContent = 0;
 
-  // Get last update for each client
+  const grid = document.getElementById('clientGrid');
+
+  // Kalau takde client — tunjuk empty state terus
+  if (allClients.length === 0) {
+    grid.innerHTML = '<div class="empty-state"><div class="empty-state-icon">👥</div><div class="empty-state-text">Tiada client lagi. Klik "+ Tambah Client" untuk mula.</div></div>';
+    hideLoading();
+    return;
+  }
+
   const clientIds = allClients.map(c => c.id);
 
-  const { data: recentSale } = await supabase
-    .from('data_sale')
-    .select('client_id, created_at')
-    .in('client_id', clientIds)
-    .order('created_at', { ascending: false });
+  const [recentSaleRes, recentMarketingRes, topupsRes] = await Promise.all([
+    supabase.from('data_sale').select('client_id, created_at').in('client_id', clientIds).order('created_at', { ascending: false }),
+    supabase.from('data_marketing').select('client_id, created_at, spend_sst').in('client_id', clientIds).order('created_at', { ascending: false }),
+    supabase.from('bajet').select('client_id, jumlah').in('client_id', clientIds)
+  ]);
 
-  const { data: recentMarketing } = await supabase
-    .from('data_marketing')
-    .select('client_id, created_at, spend_sst')
-    .in('client_id', clientIds)
-    .order('created_at', { ascending: false });
-
-  // Build last update map
   const lastUpdateMap = {};
-  recentSale?.forEach(d => {
+  (recentSaleRes.data || []).forEach(d => {
     if (!lastUpdateMap[d.client_id]) lastUpdateMap[d.client_id] = d.created_at;
   });
 
-  // Balance map
-  const { data: topups } = await supabase
-    .from('bajet')
-    .select('client_id, jumlah')
-    .in('client_id', clientIds);
-
   const topupMap = {};
-  topups?.forEach(t => {
+  (topupsRes.data || []).forEach(t => {
     topupMap[t.client_id] = (topupMap[t.client_id] || 0) + t.jumlah;
   });
 
   const spendMap = {};
-  recentMarketing?.forEach(m => {
+  (recentMarketingRes.data || []).forEach(m => {
     spendMap[m.client_id] = (spendMap[m.client_id] || 0) + (m.spend_sst || 0);
   });
 
-  // Count alerts and stale
   let alertCount = 0;
   let staleCount = 0;
-
-  const grid = document.getElementById('clientGrid');
-
-  if (allClients.length === 0) {
-    grid.innerHTML = '<div class="empty-state"><div class="empty-state-icon">👥</div><div class="empty-state-text">Tiada client lagi</div></div>';
-    hideLoading();
-    return;
-  }
 
   grid.innerHTML = allClients.map(client => {
     const lastUpdate = lastUpdateMap[client.id];
@@ -123,7 +110,6 @@ async function loadAdminDashboard() {
     const hasAlert = balance <= thresholdAmount && balance >= 0 && (topupMap[client.id] || 0) > 0;
     if (hasAlert) alertCount++;
 
-    // Simple health score
     const healthScore = isStale ? 20 : balance < 0 ? 30 : hasAlert ? 50 : 75;
     const health = getHealthLabel(healthScore);
 
@@ -143,7 +129,6 @@ async function loadAdminDashboard() {
           </div>
           <div class="health-circle ${health.class}">${healthScore}</div>
         </div>
-
         <div class="client-card-stats">
           <div class="client-stat-row">
             <span class="client-stat-label">Balance Bajet</span>
@@ -151,7 +136,7 @@ async function loadAdminDashboard() {
           </div>
           <div class="progress-bar">
             <div class="progress-fill ${balance < 0 ? 'fill-red' : hasAlert ? 'fill-yellow' : 'fill-green'}"
-              style="width:${Math.min(Math.max(((topupMap[client.id]||0) > 0 ? (spendMap[client.id]||0)/(topupMap[client.id]||1)*100 : 0), 0), 100)}%">
+              style="width:${Math.min(Math.max((topupMap[client.id]||0) > 0 ? (spendMap[client.id]||0)/(topupMap[client.id]||1)*100 : 0, 0), 100)}%">
             </div>
           </div>
           <div class="client-stat-row" style="margin-top:8px;">
@@ -159,24 +144,18 @@ async function loadAdminDashboard() {
             <span class="client-stat-value">${formatRM(topupMap[client.id] || 0)}</span>
           </div>
         </div>
-
         <div class="client-card-footer">
-          <span class="last-update-badge ${updateClass}">
-            🕐 ${updateText}
-          </span>
+          <span class="last-update-badge ${updateClass}">🕐 ${updateText}</span>
           <div style="display:flex;gap:6px;">
             ${hasAlert ? '<span class="badge badge-yellow">⚠️ Alert</span>' : ''}
             <span class="badge ${client.status === 'Aktif' ? 'badge-green' : 'badge-red'}">${client.status || 'Aktif'}</span>
           </div>
         </div>
-
         <div style="margin-top:12px;display:flex;gap:6px;">
           <button class="btn btn-primary" style="flex:1;font-size:12px;padding:8px;" onclick="event.stopPropagation(); openClientDashboard('${client.id}')">
             Buka Dashboard
           </button>
-          <button class="btn btn-secondary" style="font-size:12px;padding:8px 10px;" onclick="event.stopPropagation(); openClientSettingsModal('${client.id}')">
-            ⚙️
-          </button>
+          <button class="btn btn-secondary" style="font-size:12px;padding:8px 10px;" onclick="event.stopPropagation(); openClientSettingsModal('${client.id}')">⚙️</button>
         </div>
       </div>
     `;
