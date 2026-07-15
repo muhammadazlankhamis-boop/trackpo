@@ -108,7 +108,11 @@ async function saveSale() {
     nota: nota || null,
     created_by: currentProfile.id,
     updated_at: new Date().toISOString()
+    // closing_rate dikira AUTO oleh database
   };
+
+  // Buang closing_rate dari payload — generated column
+  delete payload.closing_rate;
 
   let error;
   if (editId) {
