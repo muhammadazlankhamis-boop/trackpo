@@ -248,59 +248,26 @@
         </div>
       </div>
 
-      <!-- DATA TABLES -->
-      <div class="table-wrapper">
-        <div class="table-tabs">
+      <!-- DATA CARDS -->
+      <div class="card">
+        <div class="table-tabs" style="border-bottom:1px solid var(--border-color);margin:-20px -20px 20px;padding:0 20px;">
           <button class="table-tab active" onclick="setTableTab('sale')">Data Sale</button>
           <button class="table-tab" onclick="setTableTab('marketing')">Data Marketing</button>
         </div>
 
-        <!-- TABLE SALE -->
+        <!-- CARDS SALE -->
         <div id="tableSaleSection">
-          <table>
-            <thead>
-              <tr>
-                <th>Tarikh</th>
-                <th>Lead Masuk</th>
-                <th>Lead Close</th>
-                <th>Rate</th>
-                <th>Total Sale</th>
-                <th>Resit</th>
-                <th>Sebab</th>
-                <th>Notes</th>
-                <th>Tindakan</th>
-              </tr>
-            </thead>
-            <tbody id="tableSaleBody">
-              <tr><td colspan="9" class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-text">Tiada data</div></td></tr>
-            </tbody>
-          </table>
+          <div id="tableSaleBody">
+            <div class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-text">Tiada data</div></div>
+          </div>
           <div class="pagination" id="paginationSale"></div>
         </div>
 
-        <!-- TABLE MARKETING -->
+        <!-- CARDS MARKETING -->
         <div id="tableMarketingSection" class="hidden">
-          <table>
-            <thead>
-              <tr>
-                <th>Tarikh</th>
-                <th>Platform</th>
-                <th>Objektif</th>
-                <th>Post</th>
-                <th>Spend</th>
-                <th>+SST</th>
-                <th>Reach</th>
-                <th>CTR</th>
-                <th>Leads</th>
-                <th>CPL</th>
-                <th>Notes</th>
-                <th>Tindakan</th>
-              </tr>
-            </thead>
-            <tbody id="tableMarketingBody">
-              <tr><td colspan="12" class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-text">Tiada data</div></td></tr>
-            </tbody>
-          </table>
+          <div id="tableMarketingBody">
+            <div class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-text">Tiada data</div></div>
+          </div>
           <div class="pagination" id="paginationMarketing"></div>
         </div>
       </div>

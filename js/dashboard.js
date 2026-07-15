@@ -442,52 +442,40 @@ function renderTables() {
 function renderSaleTable() {
   const start = (salePage - 1) * PER_PAGE;
   const paged = saleData.slice(start, start + PER_PAGE);
-  const tbody = document.getElementById('tableSaleBody');
+  const container = document.getElementById('tableSaleBody');
 
   if (paged.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="9">
-      <div class="empty-state">
-        <div class="empty-state-icon">📭</div>
-        <div class="empty-state-text">Tiada data sale untuk tempoh ini</div>
-      </div>
-    </td></tr>`;
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-text">Tiada data sale untuk tempoh ini</div></div>';
     document.getElementById('paginationSale').innerHTML = '';
     return;
   }
 
-  tbody.innerHTML = paged.map(d => {
+  container.innerHTML = paged.map(d => {
     const sebab = Array.isArray(d.sebab_tak_close) ? d.sebab_tak_close.join(', ') : '-';
     return `
-      <tr>
-        <td>${formatDate(d.tarikh)}</td>
-        <td>${formatNumber(d.lead_masuk)}</td>
-        <td>${formatNumber(d.lead_close)}</td>
-        <td>${formatPercent(d.closing_rate)}</td>
-        <td class="text-gold fw-700">${formatRM(d.total_sale)}</td>
-        <td>${d.bilangan_resit || 0}</td>
-        <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;" title="${sebab}">${sebab || '-'}</td>
-        <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;" title="${d.nota || ''}">${d.nota || '-'}</td>
-        <td style="white-space:nowrap;">
-          <button data-sale-id="${d.id}" data-action="edit" style="background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.4);color:#C9A84C;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:13px;margin-right:4px;">Edit</button>
-          <button data-sale-id="${d.id}" data-action="delete" style="background:rgba(248,81,73,0.15);border:1px solid rgba(248,81,73,0.4);color:#F85149;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:13px;">Padam</button>
-        </td>
-      </tr>
+      <div class="topup-item" style="flex-direction:column;align-items:stretch;gap:8px;padding:14px 0;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <div>
+            <div style="font-weight:700;font-size:15px;color:var(--accent-gold);">${formatRM(d.total_sale)}</div>
+            <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">${formatDate(d.tarikh)}</div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button onclick="editSale('${d.id}')" style="background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.4);color:#C9A84C;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;">Edit</button>
+            <button onclick="deleteSale('${d.id}')" style="background:rgba(248,81,73,0.15);border:1px solid rgba(248,81,73,0.4);color:#F85149;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;">Padam</button>
+          </div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:16px;font-size:13px;">
+          <div><span style="color:var(--text-secondary);">Lead Masuk:</span> <strong>${formatNumber(d.lead_masuk)}</strong></div>
+          <div><span style="color:var(--text-secondary);">Lead Close:</span> <strong>${formatNumber(d.lead_close)}</strong></div>
+          <div><span style="color:var(--text-secondary);">Rate:</span> <strong>${formatPercent(d.closing_rate)}</strong></div>
+          <div><span style="color:var(--text-secondary);">Resit:</span> <strong>${d.bilangan_resit || 0}</strong></div>
+          ${sebab && sebab !== '-' ? `<div><span style="color:var(--text-secondary);">Sebab:</span> ${sebab}</div>` : ''}
+          ${d.nota ? `<div><span style="color:var(--text-secondary);">Notes:</span> ${d.nota}</div>` : ''}
+        </div>
+      </div>
     `;
   }).join('');
 
-  // Attach event listeners selepas render
-  tbody.querySelectorAll('button[data-sale-id]').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      const id = this.getAttribute('data-sale-id');
-      const action = this.getAttribute('data-action');
-      if (action === 'edit') editSale(id);
-      if (action === 'delete') deleteSale(id);
-    }, true);
-  });
-
-  // Pagination
   const totalPages = Math.ceil(saleData.length / PER_PAGE);
   renderPagination('paginationSale', salePage, totalPages, (p) => {
     salePage = p;
@@ -498,47 +486,44 @@ function renderSaleTable() {
 function renderMarketingTable() {
   const start = (marketingPage - 1) * PER_PAGE;
   const paged = marketingData.slice(start, start + PER_PAGE);
-  const tbody = document.getElementById('tableMarketingBody');
+  const container = document.getElementById('tableMarketingBody');
+  const showActions = currentProfile?.role === 'admin';
 
   if (paged.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="12">
-      <div class="empty-state">
-        <div class="empty-state-icon">📭</div>
-        <div class="empty-state-text">Tiada data marketing untuk tempoh ini</div>
-      </div>
-    </td></tr>`;
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-text">Tiada data marketing untuk tempoh ini</div></div>';
     document.getElementById('paginationMarketing').innerHTML = '';
     return;
   }
 
-  tbody.innerHTML = paged.map(d => {
+  container.innerHTML = paged.map(d => {
     const tarikh = d.is_bulk
       ? `${formatDate(d.tarikh_mula)} → ${formatDate(d.tarikh_akhir)}`
       : formatDate(d.tarikh_mula);
-
-    // Only admin can see action buttons for marketing
-    const showActions = currentProfile?.role === 'admin';
-
     return `
-      <tr>
-        <td>${tarikh}</td>
-        <td><span class="badge badge-blue">${d.platform || '-'}</span></td>
-        <td><span class="badge badge-gold">${d.objektif || '-'}</span></td>
-        <td style="max-width:100px;overflow:hidden;text-overflow:ellipsis;" title="${d.nama_post || ''}">${d.nama_post || '-'}</td>
-        <td>${formatRM(d.ad_spend)}</td>
-        <td>${formatRM(d.spend_sst)}</td>
-        <td>${formatNumber(d.reach)}</td>
-        <td>${d.ctr ? d.ctr + '%' : '-'}</td>
-        <td>${formatNumber(d.message_leads)}</td>
-        <td>${formatRM(d.cpl)}</td>
-        <td style="max-width:100px;overflow:hidden;text-overflow:ellipsis;">${d.nota || '-'}</td>
-        <td style="white-space:nowrap;">
-          ${showActions ? `
-            <button data-mkt-id="${d.id}" data-action="edit" style="background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.4);color:#C9A84C;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:13px;margin-right:4px;">Edit</button>
-            <button data-mkt-id="${d.id}" data-action="delete" style="background:rgba(248,81,73,0.15);border:1px solid rgba(248,81,73,0.4);color:#F85149;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:13px;">Padam</button>
-          ` : '-'}
-        </td>
-      </tr>
+      <div class="topup-item" style="flex-direction:column;align-items:stretch;gap:8px;padding:14px 0;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <div>
+            <div style="font-weight:700;font-size:15px;color:var(--accent-gold);">${formatRM(d.ad_spend)} <span style="font-size:12px;color:var(--text-secondary);">(+SST: ${formatRM(d.spend_sst)})</span></div>
+            <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">${tarikh}</div>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end;">
+            <span class="badge badge-blue">${d.platform || '-'}</span>
+            <span class="badge badge-gold">${d.objektif || '-'}</span>
+            ${showActions ? `
+              <button onclick="editMarketing('${d.id}')" style="background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.4);color:#C9A84C;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;">Edit</button>
+              <button onclick="deleteMarketing('${d.id}')" style="background:rgba(248,81,73,0.15);border:1px solid rgba(248,81,73,0.4);color:#F85149;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;">Padam</button>
+            ` : ''}
+          </div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:16px;font-size:13px;">
+          <div><span style="color:var(--text-secondary);">Reach:</span> <strong>${formatNumber(d.reach)}</strong></div>
+          <div><span style="color:var(--text-secondary);">CTR:</span> <strong>${d.ctr ? d.ctr + '%' : '-'}</strong></div>
+          <div><span style="color:var(--text-secondary);">Leads:</span> <strong>${formatNumber(d.message_leads)}</strong></div>
+          <div><span style="color:var(--text-secondary);">CPL:</span> <strong>${formatRM(d.cpl)}</strong></div>
+          ${d.nama_post ? `<div><span style="color:var(--text-secondary);">Post:</span> ${d.nama_post}</div>` : ''}
+          ${d.nota ? `<div><span style="color:var(--text-secondary);">Notes:</span> ${d.nota}</div>` : ''}
+        </div>
+      </div>
     `;
   }).join('');
 
@@ -547,22 +532,8 @@ function renderMarketingTable() {
     marketingPage = p;
     renderMarketingTable();
   });
-
-  // Attach event listeners
-  const mktbody = document.getElementById('tableMarketingBody');
-  if (mktbody) {
-    mktbody.querySelectorAll('button[data-mkt-id]').forEach(btn => {
-      btn.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        const id = this.getAttribute('data-mkt-id');
-        const action = this.getAttribute('data-action');
-        if (action === 'edit') editMarketing(id);
-        if (action === 'delete') deleteMarketing(id);
-      }, true);
-    });
-  }
 }
+
 
 function renderPagination(containerId, currentPage, totalPages, onPageChange) {
   const el = document.getElementById(containerId);
