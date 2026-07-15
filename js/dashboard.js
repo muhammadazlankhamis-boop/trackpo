@@ -468,12 +468,24 @@ function renderSaleTable() {
         <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;" title="${sebab}">${sebab || '-'}</td>
         <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;" title="${d.nota || ''}">${d.nota || '-'}</td>
         <td style="white-space:nowrap;">
-          <button onclick="editSale('${d.id}')" style="background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.4);color:#C9A84C;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:13px;margin-right:4px;">Edit</button>
-          <button onclick="deleteSale('${d.id}')" style="background:rgba(248,81,73,0.15);border:1px solid rgba(248,81,73,0.4);color:#F85149;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:13px;">Padam</button>
+          <button data-sale-id="${d.id}" data-action="edit" style="background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.4);color:#C9A84C;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:13px;margin-right:4px;">Edit</button>
+          <button data-sale-id="${d.id}" data-action="delete" style="background:rgba(248,81,73,0.15);border:1px solid rgba(248,81,73,0.4);color:#F85149;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:13px;">Padam</button>
         </td>
       </tr>
     `;
   }).join('');
+
+  // Attach event listeners selepas render
+  tbody.querySelectorAll('button[data-sale-id]').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const id = this.getAttribute('data-sale-id');
+      const action = this.getAttribute('data-action');
+      if (action === 'edit') editSale(id);
+      if (action === 'delete') deleteSale(id);
+    }, true);
+  });
 
   // Pagination
   const totalPages = Math.ceil(saleData.length / PER_PAGE);
@@ -522,8 +534,8 @@ function renderMarketingTable() {
         <td style="max-width:100px;overflow:hidden;text-overflow:ellipsis;">${d.nota || '-'}</td>
         <td style="white-space:nowrap;">
           ${showActions ? `
-            <button onclick="editMarketing('${d.id}')" style="background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.4);color:#C9A84C;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:13px;margin-right:4px;">Edit</button>
-            <button onclick="deleteMarketing('${d.id}')" style="background:rgba(248,81,73,0.15);border:1px solid rgba(248,81,73,0.4);color:#F85149;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:13px;">Padam</button>
+            <button data-mkt-id="${d.id}" data-action="edit" style="background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.4);color:#C9A84C;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:13px;margin-right:4px;">Edit</button>
+            <button data-mkt-id="${d.id}" data-action="delete" style="background:rgba(248,81,73,0.15);border:1px solid rgba(248,81,73,0.4);color:#F85149;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:13px;">Padam</button>
           ` : '-'}
         </td>
       </tr>
@@ -536,7 +548,20 @@ function renderMarketingTable() {
     renderMarketingTable();
   });
 
-
+  // Attach event listeners
+  const mktbody = document.getElementById('tableMarketingBody');
+  if (mktbody) {
+    mktbody.querySelectorAll('button[data-mkt-id]').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const id = this.getAttribute('data-mkt-id');
+        const action = this.getAttribute('data-action');
+        if (action === 'edit') editMarketing(id);
+        if (action === 'delete') deleteMarketing(id);
+      }, true);
+    });
+  }
 }
 
 function renderPagination(containerId, currentPage, totalPages, onPageChange) {
