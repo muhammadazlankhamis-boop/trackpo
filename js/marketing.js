@@ -150,7 +150,7 @@ async function saveMarketing() {
   // Save post name ke post_list kalau ada
   const namaPost = document.getElementById('marketingNamaPost').value.trim();
   if (namaPost) {
-    await supabase.from('post_list').upsert({
+    await sbClient.from('post_list').upsert({
       client_id: currentClient.id,
       nama_post: namaPost
     }, { onConflict: 'client_id,nama_post', ignoreDuplicates: true });
@@ -183,9 +183,9 @@ async function saveMarketing() {
 
   let error;
   if (editId) {
-    ({ error } = await supabase.from('data_marketing').update(payload).eq('id', editId));
+    ({ error } = await sbClient.from('data_marketing').update(payload).eq('id', editId));
   } else {
-    ({ error } = await supabase.from('data_marketing').insert(payload));
+    ({ error } = await sbClient.from('data_marketing').insert(payload));
   }
 
   hideLoading();
@@ -217,7 +217,7 @@ async function deleteMarketing(id) {
   if (!confirmAction('Padam data marketing ini? Tindakan tidak boleh dibatalkan.')) return;
 
   showLoading();
-  const { error } = await supabase.from('data_marketing').delete().eq('id', id);
+  const { error } = await sbClient.from('data_marketing').delete().eq('id', id);
   hideLoading();
 
   if (error) {

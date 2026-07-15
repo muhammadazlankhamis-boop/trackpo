@@ -112,9 +112,9 @@ async function saveSale() {
 
   let error;
   if (editId) {
-    ({ error } = await supabase.from('data_sale').update(payload).eq('id', editId));
+    ({ error } = await sbClient.from('data_sale').update(payload).eq('id', editId));
   } else {
-    ({ error } = await supabase.from('data_sale').insert(payload));
+    ({ error } = await sbClient.from('data_sale').insert(payload));
   }
 
   hideLoading();
@@ -146,7 +146,7 @@ async function deleteSale(id) {
   if (!confirmAction('Padam data sale ini? Tindakan tidak boleh dibatalkan.')) return;
 
   showLoading();
-  const { error } = await supabase.from('data_sale').delete().eq('id', id);
+  const { error } = await sbClient.from('data_sale').delete().eq('id', id);
   hideLoading();
 
   if (error) {

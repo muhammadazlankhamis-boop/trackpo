@@ -142,7 +142,7 @@ async function loadTetapan() {
 
 // ===== LOAD SALE DATA =====
 async function loadSaleData(start, end) {
-  let query = supabase
+  let query = sbClient
     .from('data_sale')
     .select('*')
     .eq('client_id', currentClient.id)
@@ -158,7 +158,7 @@ async function loadSaleData(start, end) {
 
 // ===== LOAD MARKETING DATA =====
 async function loadMarketingData(start, end) {
-  let query = supabase
+  let query = sbClient
     .from('data_marketing')
     .select('*')
     .eq('client_id', currentClient.id)
@@ -676,7 +676,7 @@ async function changePassword() {
   }
 
   showLoading();
-  const { error } = await supabase.auth.updateUser({ password: newPass });
+  const { error } = await sbClient.auth.updateUser({ password: newPass });
   hideLoading();
 
   if (error) {
@@ -853,10 +853,10 @@ async function loadComparison() {
   showLoading();
 
   const [aSale, aMarketing, bSale, bMarketing] = await Promise.all([
-    supabase.from('data_sale').select('*').eq('client_id', currentClient.id).gte('tarikh', aStart).lte('tarikh', aEnd),
-    supabase.from('data_marketing').select('*').eq('client_id', currentClient.id).gte('tarikh_mula', aStart).lte('tarikh_mula', aEnd),
-    supabase.from('data_sale').select('*').eq('client_id', currentClient.id).gte('tarikh', bStart).lte('tarikh', bEnd),
-    supabase.from('data_marketing').select('*').eq('client_id', currentClient.id).gte('tarikh_mula', bStart).lte('tarikh_mula', bEnd)
+    sbClient.from('data_sale').select('*').eq('client_id', currentClient.id).gte('tarikh', aStart).lte('tarikh', aEnd),
+    sbClient.from('data_marketing').select('*').eq('client_id', currentClient.id).gte('tarikh_mula', aStart).lte('tarikh_mula', aEnd),
+    sbClient.from('data_sale').select('*').eq('client_id', currentClient.id).gte('tarikh', bStart).lte('tarikh', bEnd),
+    sbClient.from('data_marketing').select('*').eq('client_id', currentClient.id).gte('tarikh_mula', bStart).lte('tarikh_mula', bEnd)
   ]);
 
   hideLoading();

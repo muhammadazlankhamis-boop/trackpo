@@ -2,7 +2,7 @@
 
 // Semak session — redirect kalau tak login
 async function requireAuth() {
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { session } } = await sbClient.auth.getSession();
   if (!session) {
     window.location.href = 'login.html';
     return null;
@@ -12,10 +12,10 @@ async function requireAuth() {
 
 // Ambil profile user semasa
 async function getCurrentProfile() {
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { session } } = await sbClient.auth.getSession();
   if (!session) return null;
 
-  const { data: profile } = await supabase
+  const { data: profile } = await sbClient
     .from('profiles')
     .select('*, clients(*)')
     .eq('id', session.user.id)
@@ -46,7 +46,7 @@ async function requireRole(expectedRole) {
 
 // Logout
 async function logout() {
-  await supabase.auth.signOut();
+  await sbClient.auth.signOut();
   window.location.href = 'login.html';
 }
 
@@ -63,7 +63,7 @@ async function createClientUser(email, password, clientId, nama) {
   // Kalau email takde @, jadikan username@trackpo.app
   const finalEmail = email.includes('@') ? email : `${email}@trackpo.app`;
 
-  const { data, error } = await supabase.auth.admin.createUser({
+  const { data, error } = await sbClient.auth.admin.createUser({
     email: finalEmail,
     password: password,
     email_confirm: true
