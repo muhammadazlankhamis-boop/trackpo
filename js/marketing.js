@@ -166,16 +166,16 @@ async function saveMarketing() {
     nama_post: namaPost || null,
     link_post: document.getElementById('marketingLinkPost').value.trim() || null,
     ad_spend: adSpend,
-    // spend_sst dikira auto oleh database: round(ad_spend * 1.1, 2)
+    // spend_sst, cpl, cpm, cost_per_purchase — dikira AUTO oleh database, jangan insert
     reach: parseInt(document.getElementById('marketingReach').value) || null,
     ctr: parseFloat(document.getElementById('marketingCTR').value) || null,
     message_leads: parseInt(document.getElementById('marketingLeads').value) || null,
-    cpl: parseFloat(document.getElementById('marketingCPL').value) || null,
+    // cpl dikira auto
     impression: parseInt(document.getElementById('marketingImpression').value) || null,
     frequency: parseFloat(document.getElementById('marketingFrequency').value) || null,
-    cpm: parseFloat(document.getElementById('marketingCPM').value) || null,
+    // cpm dikira auto
     jumlah_purchase: parseInt(document.getElementById('marketingPurchase').value) || null,
-    cost_per_purchase: parseFloat(document.getElementById('marketingCostPurchase').value) || null,
+    // cost_per_purchase dikira auto
     nota: document.getElementById('marketingNota').value.trim() || null,
     created_by: currentProfile.id,
     updated_at: new Date().toISOString()
