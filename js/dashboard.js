@@ -467,13 +467,23 @@ function renderSaleTable() {
         <td>${d.bilangan_resit || 0}</td>
         <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;" title="${sebab}">${sebab || '-'}</td>
         <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;" title="${d.nota || ''}">${d.nota || '-'}</td>
-        <td>
-          <button class="action-btn" onclick="editSale('${d.id}')" title="Edit">✏️</button>
-          <button class="action-btn delete" onclick="deleteSale('${d.id}')" title="Padam">🗑️</button>
+        <td style="white-space:nowrap;">
+          <button class="action-btn" data-action="edit-sale" data-id="${d.id}" style="font-size:18px;padding:8px 12px;">✏️</button>
+          <button class="action-btn delete" data-action="delete-sale" data-id="${d.id}" style="font-size:18px;padding:8px 12px;">🗑️</button>
         </td>
       </tr>
     `;
   }).join('');
+
+  // Event delegation
+  tbody.onclick = (e) => {
+    const btn = e.target.closest('[data-action]');
+    if (!btn) return;
+    const id = btn.dataset.id;
+    const action = btn.dataset.action;
+    if (action === 'edit-sale') editSale(id);
+    if (action === 'delete-sale') deleteSale(id);
+  };
 
   // Pagination
   const totalPages = Math.ceil(saleData.length / PER_PAGE);
@@ -520,10 +530,10 @@ function renderMarketingTable() {
         <td>${formatNumber(d.message_leads)}</td>
         <td>${formatRM(d.cpl)}</td>
         <td style="max-width:100px;overflow:hidden;text-overflow:ellipsis;">${d.nota || '-'}</td>
-        <td>
+        <td style="white-space:nowrap;">
           ${showActions ? `
-            <button class="action-btn" onclick="editMarketing('${d.id}')" title="Edit">✏️</button>
-            <button class="action-btn delete" onclick="deleteMarketing('${d.id}')" title="Padam">🗑️</button>
+            <button class="action-btn" data-action="edit-mkt" data-id="${d.id}" style="font-size:18px;padding:8px 12px;">✏️</button>
+            <button class="action-btn delete" data-action="delete-mkt" data-id="${d.id}" style="font-size:18px;padding:8px 12px;">🗑️</button>
           ` : '-'}
         </td>
       </tr>
@@ -535,6 +545,19 @@ function renderMarketingTable() {
     marketingPage = p;
     renderMarketingTable();
   });
+
+  // Event delegation for marketing table
+  const mtbody = document.getElementById('tableMarketingBody');
+  if (mtbody) {
+    mtbody.onclick = (e) => {
+      const btn = e.target.closest('[data-action]');
+      if (!btn) return;
+      const id = btn.dataset.id;
+      const action = btn.dataset.action;
+      if (action === 'edit-mkt') editMarketing(id);
+      if (action === 'delete-mkt') deleteMarketing(id);
+    };
+  }
 }
 
 function renderPagination(containerId, currentPage, totalPages, onPageChange) {
