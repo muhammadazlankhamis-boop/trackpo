@@ -143,8 +143,13 @@ async function saveSale() {
 }
 
 function editSale(id) {
+  console.log('editSale dipanggil:', id);
   openSaleModal(id);
 }
+
+function deleteSale(id) {
+  console.log('deleteSale dipanggil:', id);
+  if (!confirmAction('Padam data sale ini?')) return;
 
 async function deleteSale(id) {
   if (!confirmAction('Padam data sale ini? Tindakan tidak boleh dibatalkan.')) return;
