@@ -1,0 +1,28 @@
+/* ===== TRACKPO — THEME VARIABLES ===== */
+:root {
+  --bg-primary: #0D0D0D;
+  --bg-card: #1A1A1A;
+  --bg-input: #111111;
+  --text-primary: #FFFFFF;
+  --text-secondary: #8A8A8A;
+  --accent-gold: #C9A84C;
+  --positive: #3FB950;
+  --negative: #F85149;
+  --warning: #F0A500;
+  --info: #58A6FF;
+  --shadow: 0 4px 20px rgba(0,0,0,0.3);
+  --border-radius: 16px;
+  --border-color: #2A2A2A;
+  --nav-height: 64px;
+  --sidebar-width: 240px;
+}
+
+[data-theme="light"] {
+  --bg-primary: #F8F9FA;
+  --bg-card: #FFFFFF;
+  --bg-input: #F0F2F5;
+  --text-primary: #1A1A2E;
+  --text-secondary: #6B7280;
+  --shadow: 0 4px 20px rgba(0,0,0,0.08);
+  --border-color: #E5E7EB;
+}

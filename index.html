@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TRACKPO — Dashboard</title>
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- Loading -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+</div>
+
+<!-- Toast -->
+<div class="toast-container" id="toastContainer"></div>
+
+<div class="app-layout">
+
+  <!-- SIDEBAR (Desktop) -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">TRACKPO</div>
+    <p class="sidebar-sub">Aipromarketing</p>
+    <ul class="sidebar-nav">
+      <li><a href="#" class="active" onclick="showSection('dashboard')">
+        <span class="nav-icon">🏠</span> Dashboard
+      </a></li>
+      <li><a href="#" onclick="showSection('ringkasan')">
+        <span class="nav-icon">📊</span> Ringkasan Mingguan
+      </a></li>
+      <li><a href="#" onclick="showSection('comparison')">
+        <span class="nav-icon">🔄</span> Comparison
+      </a></li>
+      <li><a href="#" onclick="showSection('data')">
+        <span class="nav-icon">📋</span> Data
+      </a></li>
+      <li><a href="#" onclick="showSection('settings')">
+        <span class="nav-icon">⚙️</span> Settings
+      </a></li>
+    </ul>
+    <div class="sidebar-user">
+      <div class="user-avatar" id="sidebarAvatar">A</div>
+      <div>
+        <div class="user-name" id="sidebarName">-</div>
+        <div class="user-role" id="sidebarRole">Client</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+      <div class="client-name-header" id="clientNameHeader">-</div>
+      <div class="top-bar-right">
+        <div class="notif-bell" id="notifBell" onclick="toggleNotif()">
+          🔔
+          <div class="notif-dot hidden" id="notifDot"></div>
+        </div>
+        <button class="btn btn-secondary" onclick="logout()" style="font-size:13px;padding:8px 14px;">
+          Log Keluar
+        </button>
+      </div>
+    </div>
+
+    <!-- ==================== SECTION: DASHBOARD ==================== -->
+    <section id="sectionDashboard">
+
+      <!-- Info Bar -->
+      <div class="info-bar">
+        <span class="period-label" id="periodLabel">Julai 2026</span>
+        <span class="last-update-info" id="lastUpdateInfo">Memuatkan...</span>
+      </div>
+
+      <!-- Alert Banner -->
+      <div class="alert-banner warning hidden" id="alertLeadKosong">
+        <span>⚠️ Tiada lead semalam. Semak kempen iklan anda.</span>
+        <button class="alert-dismiss" onclick="this.parentElement.classList.add('hidden')">×</button>
+      </div>
+
+      <div class="alert-banner danger hidden" id="alertBajetRendah">
+        <span id="alertBajetText">🔴 Balance bajet rendah.</span>
+        <button class="alert-dismiss" onclick="this.parentElement.classList.add('hidden')">×</button>
+      </div>
+
+      <!-- Date Filter -->
+      <div class="filter-section">
+        <div class="filter-bar">
+          <button class="filter-btn" onclick="setFilter('harini')">Harini</button>
+          <button class="filter-btn" onclick="setFilter('semalam')">Semalam</button>
+          <button class="filter-btn" onclick="setFilter('7hari')">7 Hari</button>
+          <button class="filter-btn active" id="btnBulanIni" onclick="setFilter('bulan-ini')">Bulan Ini</button>
+          <button class="filter-btn" onclick="setFilter('bulan-lepas')">Bulan Lepas</button>
+          <button class="filter-btn" onclick="setFilter('semua')">Semua</button>
+          <button class="filter-btn" onclick="setFilter('custom')">Custom</button>
+        </div>
+
+        <!-- Custom date picker -->
+        <div class="custom-date-row" id="customDateRow">
+          <input type="date" id="customStart" onchange="applyCustomFilter()" />
+          <span style="color:var(--text-secondary)">hingga</span>
+          <input type="date" id="customEnd" onchange="applyCustomFilter()" />
+          <button class="btn-clear-date" onclick="clearCustomFilter()">Clear</button>
+        </div>
+
+        <!-- Platform Filter -->
+        <div class="platform-bar" style="margin-top:10px;">
+          <button class="platform-btn active" onclick="setPlatform('semua')">Semua</button>
+          <button class="platform-btn" onclick="setPlatform('Meta Ads')">Meta</button>
+          <button class="platform-btn" onclick="setPlatform('TikTok Ads')">TikTok</button>
+        </div>
+      </div>
+
+      <!-- KPI CARDS -->
+      <div class="kpi-grid" id="kpiGrid">
+        <!-- JS akan populate -->
+        <div class="kpi-card kpi-gold">
+          <div class="kpi-label">Ad Spend</div>
+          <div class="kpi-value" id="kpiAdSpend">-</div>
+          <div class="kpi-sub">Belanja iklan (tanpa SST)</div>
+        </div>
+
+        <div class="kpi-card kpi-orange">
+          <div class="kpi-label">Ad Spend+SST</div>
+          <div class="kpi-value" id="kpiAdSpendSST">-</div>
+          <div class="kpi-sub">Termasuk SST 10%</div>
+        </div>
+
+        <div class="kpi-card kpi-blue">
+          <div class="kpi-label">Lead</div>
+          <div class="kpi-value" id="kpiLead">-</div>
+          <div class="kpi-sub" id="kpiLeadSub">Lead Ads / Real</div>
+          <div class="kpi-gap" id="kpiLeadGap"></div>
+        </div>
+
+        <div class="kpi-card kpi-purple">
+          <div class="kpi-label">CPL</div>
+          <div class="kpi-value" id="kpiCPL">-</div>
+          <div class="kpi-sub" id="kpiCPLSub">CPL Ads / Real</div>
+          <div id="kpiCPLBadge" style="margin-top:6px;"></div>
+        </div>
+
+        <div class="kpi-card kpi-green">
+          <div class="kpi-label">Total Sale</div>
+          <div class="kpi-value" id="kpiSale">-</div>
+          <div class="kpi-sub" id="kpiSaleSub">Target bulan</div>
+          <div class="progress-bar">
+            <div class="progress-fill fill-green" id="kpiSaleProgress" style="width:0%"></div>
+          </div>
+        </div>
+
+        <div class="kpi-card kpi-teal">
+          <div class="kpi-label">Closing Rate</div>
+          <div class="kpi-value" id="kpiClosing">-</div>
+          <div class="kpi-sub" id="kpiClosingSub">-</div>
+          <div class="progress-bar">
+            <div class="progress-fill fill-green" id="kpiClosingProgress" style="width:0%"></div>
+          </div>
+        </div>
+
+        <div class="kpi-card kpi-red">
+          <div class="kpi-label">Balance Bajet</div>
+          <div class="kpi-value" id="kpiBalance">-</div>
+          <div style="margin-top:6px;" id="kpiBalanceBadge"></div>
+        </div>
+
+        <div class="kpi-card kpi-blue">
+          <div class="kpi-label">ROAS</div>
+          <div class="kpi-value" id="kpiROAS">-</div>
+          <div style="margin-top:6px;" id="kpiROASBadge"></div>
+        </div>
+      </div>
+
+      <!-- CHART SECTION -->
+      <div class="card">
+        <div class="chart-tabs">
+          <button class="chart-tab active" onclick="setChartTab('sale-lead')">Sale & Lead</button>
+          <button class="chart-tab" onclick="setChartTab('ad-performance')">Ad Performance</button>
+          <button class="chart-tab" onclick="setChartTab('closing')">Closing</button>
+          <button class="chart-tab" onclick="setChartTab('sebab')">Sebab</button>
+        </div>
+        <div class="group-by-bar">
+          <button class="group-btn active" onclick="setGroupBy('tarikh')">Tarikh</button>
+          <button class="group-btn" onclick="setGroupBy('minggu')">Minggu</button>
+          <button class="group-btn" onclick="setGroupBy('bulan')">Bulan</button>
+        </div>
+        <div class="chart-container">
+          <canvas id="mainChart"></canvas>
+        </div>
+      </div>
+
+      <!-- BEST DAY + SEBAB -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;" class="two-col-section">
+        <div class="card">
+          <div class="section-header">
+            <span class="section-title">🏆 Hari Terbaik</span>
+          </div>
+          <div class="best-day-list" id="bestDayList">
+            <div class="empty-state"><div class="empty-state-text">Tiada data</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-header">
+            <span class="section-title">❌ Sebab Tak Close</span>
+          </div>
+          <div class="chart-container" style="height:180px;">
+            <canvas id="sebabChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- BAJET SECTION -->
+      <div class="card">
+        <div class="section-header">
+          <span class="section-title">💰 Bajet Iklan</span>
+          <span id="bajetAdminBtn" class="hidden">
+            <button class="btn btn-primary" style="font-size:12px;padding:8px 14px;" onclick="openTopupModal()">Topup</button>
+          </span>
+        </div>
+
+        <div>
+          <div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">Balance</div>
+          <div class="bajet-balance" id="bajetBalance">-</div>
+          <div class="progress-bar" style="height:8px;margin-top:10px;">
+            <div class="progress-fill fill-green" id="bajetProgress" style="width:0%"></div>
+          </div>
+        </div>
+
+        <div class="bajet-stats">
+          <div class="bajet-stat">
+            <div class="bajet-stat-value" id="bajetTotalTopup">-</div>
+            <div class="bajet-stat-label">Total Topup</div>
+          </div>
+          <div class="bajet-stat">
+            <div class="bajet-stat-value" id="bajetTotalSpend">-</div>
+            <div class="bajet-stat-label">Total Spend+SST</div>
+          </div>
+        </div>
+
+        <div class="topup-history" id="topupHistory">
+          <div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px;font-weight:600;">5 Topup Terkini</div>
+        </div>
+      </div>
+
+      <!-- DATA TABLES -->
+      <div class="table-wrapper">
+        <div class="table-tabs">
+          <button class="table-tab active" onclick="setTableTab('sale')">Data Sale</button>
+          <button class="table-tab" onclick="setTableTab('marketing')">Data Marketing</button>
+        </div>
+
+        <!-- TABLE SALE -->
+        <div id="tableSaleSection">
+          <table>
+            <thead>
+              <tr>
+                <th>Tarikh</th>
+                <th>Lead Masuk</th>
+                <th>Lead Close</th>
+                <th>Rate</th>
+                <th>Total Sale</th>
+                <th>Resit</th>
+                <th>Sebab</th>
+                <th>Notes</th>
+                <th>Tindakan</th>
+              </tr>
+            </thead>
+            <tbody id="tableSaleBody">
+              <tr><td colspan="9" class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-text">Tiada data</div></td></tr>
+            </tbody>
+          </table>
+          <div class="pagination" id="paginationSale"></div>
+        </div>
+
+        <!-- TABLE MARKETING -->
+        <div id="tableMarketingSection" class="hidden">
+          <table>
+            <thead>
+              <tr>
+                <th>Tarikh</th>
+                <th>Platform</th>
+                <th>Objektif</th>
+                <th>Post</th>
+                <th>Spend</th>
+                <th>+SST</th>
+                <th>Reach</th>
+                <th>CTR</th>
+                <th>Leads</th>
+                <th>CPL</th>
+                <th>Notes</th>
+                <th>Tindakan</th>
+              </tr>
+            </thead>
+            <tbody id="tableMarketingBody">
+              <tr><td colspan="12" class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-text">Tiada data</div></td></tr>
+            </tbody>
+          </table>
+          <div class="pagination" id="paginationMarketing"></div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==================== SECTION: RINGKASAN ==================== -->
+    <section id="sectionRingkasan" class="hidden">
+      <div class="card">
+        <div class="section-header">
+          <span class="section-title">📊 Ringkasan Mingguan</span>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:20px;">
+          <input type="date" id="weekStart" style="padding:8px 12px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:10px;color:var(--text-primary);font-family:inherit;" />
+          <span style="color:var(--text-secondary)">hingga</span>
+          <input type="date" id="weekEnd" style="padding:8px 12px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:10px;color:var(--text-primary);font-family:inherit;" />
+          <button class="btn btn-primary" onclick="loadWeekly()">Semak</button>
+          <button class="btn btn-secondary" onclick="resetWeekly()">Reset</button>
+        </div>
+
+        <div class="weekly-grid" id="weeklyGrid">
+          <div class="weekly-stat">
+            <div class="weekly-stat-label">Lead Real</div>
+            <div class="weekly-stat-value" id="wLead">-</div>
+            <div class="weekly-stat-change" id="wLeadChange"></div>
+          </div>
+          <div class="weekly-stat">
+            <div class="weekly-stat-label">Ad Spend+SST</div>
+            <div class="weekly-stat-value" id="wSpend">-</div>
+            <div class="weekly-stat-change" id="wSpendChange"></div>
+          </div>
+          <div class="weekly-stat">
+            <div class="weekly-stat-label">CPL Real</div>
+            <div class="weekly-stat-value" id="wCPL">-</div>
+            <div class="weekly-stat-change" id="wCPLChange"></div>
+          </div>
+          <div class="weekly-stat">
+            <div class="weekly-stat-label">Total Sale</div>
+            <div class="weekly-stat-value" id="wSale">-</div>
+            <div class="weekly-stat-change" id="wSaleChange"></div>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-full" onclick="shareWA()" style="margin-top:8px;">
+          📱 Share via WhatsApp
+        </button>
+      </div>
+    </section>
+
+    <!-- ==================== SECTION: COMPARISON ==================== -->
+    <section id="sectionComparison" class="hidden">
+      <div class="card">
+        <div class="section-header">
+          <span class="section-title">🔄 Comparison Mode</span>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+          <div>
+            <div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px;font-weight:600;">TEMPOH A</div>
+            <input type="date" id="compAStart" style="width:100%;padding:10px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:10px;color:var(--text-primary);font-family:inherit;margin-bottom:8px;" />
+            <input type="date" id="compAEnd" style="width:100%;padding:10px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:10px;color:var(--text-primary);font-family:inherit;" />
+          </div>
+          <div>
+            <div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px;font-weight:600;">TEMPOH B</div>
+            <input type="date" id="compBStart" style="width:100%;padding:10px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:10px;color:var(--text-primary);font-family:inherit;margin-bottom:8px;" />
+            <input type="date" id="compBEnd" style="width:100%;padding:10px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:10px;color:var(--text-primary);font-family:inherit;" />
+          </div>
+        </div>
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+          <button class="filter-btn" onclick="setCompShortcut('bulan-ini')">Bulan Ini vs Lepas</button>
+          <button class="filter-btn" onclick="setCompShortcut('7hari')">7 Hari Ini vs Lepas</button>
+        </div>
+
+        <button class="btn btn-primary btn-full" onclick="loadComparison()">Bandingkan</button>
+      </div>
+
+      <div id="comparisonResult" class="hidden">
+        <div class="comparison-grid" id="comparisonGrid"></div>
+        <div class="card">
+          <div class="chart-container">
+            <canvas id="compChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SECTION: DATA ==================== -->
+    <section id="sectionData" class="hidden">
+      <div class="card">
+        <div class="section-title" style="margin-bottom:16px;">📋 Data</div>
+        <p style="color:var(--text-secondary);font-size:14px;">Guna FAB (+) untuk tambah data, atau tengok table dalam Dashboard.</p>
+        <button class="btn btn-primary" onclick="showSection('dashboard')" style="margin-top:16px;">
+          Pergi ke Dashboard
+        </button>
+      </div>
+    </section>
+
+    <!-- ==================== SECTION: SETTINGS ==================== -->
+    <section id="sectionSettings" class="hidden">
+      <div class="settings-section">
+        <div class="settings-title">Maklumat Akaun</div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label" id="settingNama">-</div>
+            <div class="settings-row-sub">Nama</div>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label" id="settingPakej">-</div>
+            <div class="settings-row-sub">Pakej</div>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label" id="settingTargetLead">-</div>
+            <div class="settings-row-sub">Target Lead Bulan Ini</div>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label" id="settingTargetSale">-</div>
+            <div class="settings-row-sub">Target Sale Bulan Ini</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title">Paparan</div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Tema Gelap</div>
+            <div class="settings-row-sub">Tukar antara Dark / Light mode</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="themeToggle" onchange="toggleTheme(this.checked)" />
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title">Keselamatan</div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Tukar Password</div>
+            <div class="settings-row-sub">Kemaskini kata laluan anda</div>
+          </div>
+          <button class="btn btn-secondary" style="font-size:13px;" onclick="openChangePassword()">Tukar</button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title">Export</div>
+        <button class="btn btn-primary btn-full" onclick="exportPDF()">
+          📄 Download PDF Report
+        </button>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- BOTTOM NAV (Mobile) -->
+<nav class="bottom-nav">
+  <a class="nav-item active" onclick="showSection('dashboard')">
+    <span class="nav-icon">🏠</span>
+    <span>Dashboard</span>
+  </a>
+  <a class="nav-item" onclick="showSection('ringkasan')">
+    <span class="nav-icon">📊</span>
+    <span>Ringkasan</span>
+  </a>
+  <button class="nav-fab-item" onclick="toggleFAB()">+</button>
+  <a class="nav-item" onclick="showSection('comparison')">
+    <span class="nav-icon">🔄</span>
+    <span>Compare</span>
+  </a>
+  <a class="nav-item" onclick="showSection('settings')">
+    <span class="nav-icon">⚙️</span>
+    <span>Settings</span>
+  </a>
+</nav>
+
+<!-- FAB (Desktop) -->
+<div class="fab-container">
+  <div class="fab-menu" id="fabMenu">
+    <div class="fab-item" id="fabSaleItem">
+      <span class="fab-item-label">Tambah Data Sale</span>
+      <button class="fab-item-btn" onclick="openSaleModal()">💰</button>
+    </div>
+    <div class="fab-item hidden" id="fabMarketingItem">
+      <span class="fab-item-label">Tambah Data Marketing</span>
+      <button class="fab-item-btn" onclick="openMarketingModal()">📣</button>
+    </div>
+    <div class="fab-item hidden" id="fabTopupItem">
+      <span class="fab-item-label">Topup Bajet</span>
+      <button class="fab-item-btn" onclick="openTopupModal()">💳</button>
+    </div>
+  </div>
+  <button class="fab-main" id="fabMain" onclick="toggleFAB()">+</button>
+</div>
+
+<!-- MODAL: ADD DATA SALE -->
+<div class="modal-overlay" id="modalSale">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-title" id="modalSaleTitle">Tambah Data Sale</span>
+      <button class="modal-close" onclick="closeSaleModal()">×</button>
+    </div>
+
+    <div class="form-group">
+      <label>Tarikh *</label>
+      <input type="date" id="saleDate" />
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Lead Masuk *</label>
+        <input type="number" id="saleLeadMasuk" min="0" oninput="calcClosingRate()" />
+      </div>
+      <div class="form-group">
+        <label>Lead Close *</label>
+        <input type="number" id="saleLeadClose" min="0" oninput="calcClosingRate()" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Closing Rate</label>
+        <input type="text" id="saleClosingRate" readonly placeholder="Auto-kira" />
+      </div>
+      <div class="form-group">
+        <label>Total Sale (RM) *</label>
+        <input type="number" id="saleTotalSale" min="0" step="0.01" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Bilangan Resit</label>
+      <input type="number" id="saleBilanganResit" min="0" />
+    </div>
+
+    <div class="form-group">
+      <label>Sebab Tak Close</label>
+      <div class="checkbox-group">
+        <label class="checkbox-item">
+          <input type="checkbox" value="Customer tak balas" class="sebabCheck" />
+          Customer tak balas
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" value="Survey" class="sebabCheck" />
+          Survey
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" value="Tanya harga" class="sebabCheck" />
+          Tanya harga
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" value="Tak boleh buat" class="sebabCheck" />
+          Tak boleh buat
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" value="Lain-lain" class="sebabCheck" id="sebabLainCheck" onchange="toggleLainLain(this)" />
+          Lain-lain
+        </label>
+        <input type="text" id="sebabLainText" placeholder="Nyatakan sebab..." class="hidden" style="margin-top:4px;" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Notes</label>
+      <textarea id="saleNota" rows="3" placeholder="Nota tambahan..."></textarea>
+    </div>
+
+    <input type="hidden" id="saleEditId" />
+
+    <button class="btn btn-primary btn-full" onclick="saveSale()">Simpan</button>
+  </div>
+</div>
+
+<!-- MODAL: ADD DATA MARKETING -->
+<div class="modal-overlay" id="modalMarketing">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-title" id="modalMarketingTitle">Tambah Data Marketing</span>
+      <button class="modal-close" onclick="closeMarketingModal()">×</button>
+    </div>
+
+    <div class="toggle-group">
+      <button class="toggle-btn active" id="btnHarian" onclick="setMarketingMode('harian')">Harian</button>
+      <button class="toggle-btn" id="btnBulk" onclick="setMarketingMode('bulk')">Bulk (Range)</button>
+    </div>
+
+    <!-- Tarikh Harian -->
+    <div class="form-group" id="tarihHarianGroup">
+      <label>Tarikh *</label>
+      <input type="date" id="marketingDate" />
+    </div>
+
+    <!-- Tarikh Bulk -->
+    <div class="form-row hidden" id="tarihBulkGroup">
+      <div class="form-group">
+        <label>Tarikh Mula *</label>
+        <input type="date" id="marketingDateStart" />
+      </div>
+      <div class="form-group">
+        <label>Tarikh Akhir *</label>
+        <input type="date" id="marketingDateEnd" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Platform *</label>
+      <select id="marketingPlatform">
+        <option value="">Pilih Platform</option>
+        <option value="Meta Ads">Meta Ads</option>
+        <option value="TikTok Ads">TikTok Ads</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Objektif *</label>
+      <select id="marketingObjektif" onchange="setObjektifFields()">
+        <option value="">Pilih Objektif</option>
+        <option value="LEAD">LEAD</option>
+        <option value="AWARENESS">AWARENESS</option>
+        <option value="CONVERSION">CONVERSION</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Nama Post <span style="color:var(--text-secondary)">(Optional)</span></label>
+      <input type="text" id="marketingNamaPost" list="namaPostList" placeholder="Nama post iklan" />
+      <datalist id="namaPostList"></datalist>
+    </div>
+
+    <div class="form-group">
+      <label>Link Post <span style="color:var(--text-secondary)">(Optional)</span></label>
+      <input type="url" id="marketingLinkPost" placeholder="https://..." />
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label id="labelAdSpend">Ad Spend (RM) *</label>
+        <input type="number" id="marketingAdSpend" min="0" step="0.01" oninput="calcMarketingAuto()" />
+      </div>
+      <div class="form-group">
+        <label>Spend+SST (RM)</label>
+        <input type="number" id="marketingSpendSST" readonly placeholder="Auto ×1.1" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Reach</label>
+        <input type="number" id="marketingReach" min="0" oninput="calcMarketingAuto()" />
+      </div>
+      <div class="form-group">
+        <label>CTR (%)</label>
+        <input type="number" id="marketingCTR" min="0" step="0.01" />
+      </div>
+    </div>
+
+    <!-- LEAD fields -->
+    <div id="fieldLead">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Message Leads</label>
+          <input type="number" id="marketingLeads" min="0" oninput="calcMarketingAuto()" />
+        </div>
+        <div class="form-group">
+          <label>CPL (RM)</label>
+          <input type="number" id="marketingCPL" readonly placeholder="Auto-kira" />
+        </div>
+      </div>
+    </div>
+
+    <!-- AWARENESS fields -->
+    <div id="fieldAwareness" class="hidden">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Impression</label>
+          <input type="number" id="marketingImpression" min="0" />
+        </div>
+        <div class="form-group">
+          <label>Frequency</label>
+          <input type="number" id="marketingFrequency" min="0" step="0.01" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>CPM (RM)</label>
+        <input type="number" id="marketingCPM" readonly placeholder="Auto-kira" />
+      </div>
+    </div>
+
+    <!-- CONVERSION fields -->
+    <div id="fieldConversion" class="hidden">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Jumlah Purchase</label>
+          <input type="number" id="marketingPurchase" min="0" oninput="calcMarketingAuto()" />
+        </div>
+        <div class="form-group">
+          <label>Cost per Purchase (RM)</label>
+          <input type="number" id="marketingCostPurchase" readonly placeholder="Auto-kira" />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Notes</label>
+      <textarea id="marketingNota" rows="2" placeholder="Nota tambahan..."></textarea>
+    </div>
+
+    <input type="hidden" id="marketingEditId" />
+
+    <button class="btn btn-primary btn-full" onclick="saveMarketing()">Simpan</button>
+  </div>
+</div>
+
+<!-- MODAL: TOPUP BAJET -->
+<div class="modal-overlay" id="modalTopup">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-title">Topup Bajet Iklan</span>
+      <button class="modal-close" onclick="closeTopupModal()">×</button>
+    </div>
+    <div class="form-group">
+      <label>Jumlah Topup (RM) *</label>
+      <input type="number" id="topupAmount" min="0" step="0.01" placeholder="0.00" />
+    </div>
+    <div class="form-group">
+      <label>Notes</label>
+      <input type="text" id="topupNota" placeholder="Contoh: Topup Julai 2026" />
+    </div>
+    <button class="btn btn-primary btn-full" onclick="saveTopup()">Topup</button>
+  </div>
+</div>
+
+<!-- MODAL: CHANGE PASSWORD -->
+<div class="modal-overlay" id="modalPassword">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-title">Tukar Password</span>
+      <button class="modal-close" onclick="document.getElementById('modalPassword').classList.remove('open')">×</button>
+    </div>
+    <div class="form-group">
+      <label>Password Baru *</label>
+      <input type="password" id="newPassword" placeholder="Minimum 8 aksara" />
+    </div>
+    <div class="form-group">
+      <label>Sahkan Password *</label>
+      <input type="password" id="confirmPassword" placeholder="Taip semula password baru" />
+    </div>
+    <button class="btn btn-primary btn-full" onclick="changePassword()">Simpan Password</button>
+  </div>
+</div>
+
+<script src="js/supabase.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/sale.js"></script>
+<script src="js/marketing.js"></script>
+<script src="js/bajet.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/pdf.js"></script>
+</body>
+</html>
