@@ -35,8 +35,8 @@
       <li><a href="#" onclick="showSection('comparison')">
         <span class="nav-icon">🔄</span> Comparison
       </a></li>
-      <li><a href="#" onclick="showSection('data')">
-        <span class="nav-icon">📋</span> Data
+      <li><a href="#" onclick="showSection('rekod')">
+        <span class="nav-icon">📋</span> Rekod Data
       </a></li>
       <li><a href="#" onclick="showSection('settings')">
         <span class="nav-icon">⚙️</span> Settings
@@ -355,14 +355,79 @@
       </div>
     </section>
 
-    <!-- ==================== SECTION: DATA ==================== -->
-    <section id="sectionData" class="hidden">
-      <div class="card">
-        <div class="section-title" style="margin-bottom:16px;">📋 Data</div>
-        <p style="color:var(--text-secondary);font-size:14px;">Guna FAB (+) untuk tambah data, atau tengok table dalam Dashboard.</p>
-        <button class="btn btn-primary" onclick="showSection('dashboard')" style="margin-top:16px;">
-          Pergi ke Dashboard
-        </button>
+    <!-- ==================== SECTION: REKOD DATA ==================== -->
+    <section id="sectionRekod" class="hidden">
+      <div class="top-bar">
+        <div class="client-name-header">📋 Rekod Data</div>
+      </div>
+
+      <!-- Filter -->
+      <div class="filter-section">
+        <div class="filter-bar">
+          <button class="filter-btn" onclick="setFilter('harini')">Harini</button>
+          <button class="filter-btn" onclick="setFilter('semalam')">Semalam</button>
+          <button class="filter-btn" onclick="setFilter('7hari')">7 Hari</button>
+          <button class="filter-btn rekod-active" onclick="setFilter('bulan-ini')">Bulan Ini</button>
+          <button class="filter-btn" onclick="setFilter('bulan-lepas')">Bulan Lepas</button>
+          <button class="filter-btn" onclick="setFilter('semua')">Semua</button>
+        </div>
+      </div>
+
+      <!-- Table tabs -->
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div class="table-tabs" style="border-bottom:1px solid var(--border-color);padding:0 16px;">
+          <button class="table-tab active" onclick="setRekodTab('sale')">Data Sale</button>
+          <button class="table-tab" onclick="setRekodTab('marketing')">Data Marketing</button>
+        </div>
+
+        <!-- SALE TABLE -->
+        <div id="rekodSaleSection" style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Tarikh</th>
+                <th>Lead Masuk</th>
+                <th>Lead Close</th>
+                <th>Rate</th>
+                <th>Total Sale</th>
+                <th>Resit</th>
+                <th>Sebab</th>
+                <th>Notes</th>
+                <th>Tindakan</th>
+              </tr>
+            </thead>
+            <tbody id="rekodSaleBody">
+              <tr><td colspan="9"><div class="empty-state empty-state-text">Tiada data</div></td></tr>
+            </tbody>
+          </table>
+          <div class="pagination" id="paginationRekodSale"></div>
+        </div>
+
+        <!-- MARKETING TABLE -->
+        <div id="rekodMarketingSection" class="hidden" style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Tarikh</th>
+                <th>Platform</th>
+                <th>Objektif</th>
+                <th>Post</th>
+                <th>Spend</th>
+                <th>+SST</th>
+                <th>Reach</th>
+                <th>CTR</th>
+                <th>Leads</th>
+                <th>CPL</th>
+                <th>Notes</th>
+                <th>Tindakan</th>
+              </tr>
+            </thead>
+            <tbody id="rekodMarketingBody">
+              <tr><td colspan="12"><div class="empty-state empty-state-text">Tiada data</div></td></tr>
+            </tbody>
+          </table>
+          <div class="pagination" id="paginationRekodMarketing"></div>
+        </div>
       </div>
     </section>
 
@@ -443,9 +508,9 @@
     <span>Ringkasan</span>
   </a>
   <button class="nav-fab-item" onclick="toggleFAB()">+</button>
-  <a class="nav-item" onclick="showSection('comparison')">
-    <span class="nav-icon">🔄</span>
-    <span>Compare</span>
+  <a class="nav-item" onclick="showSection('rekod')">
+    <span class="nav-icon">📋</span>
+    <span>Rekod</span>
   </a>
   <a class="nav-item" onclick="showSection('settings')">
     <span class="nav-icon">⚙️</span>

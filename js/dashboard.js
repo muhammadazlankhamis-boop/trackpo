@@ -113,6 +113,8 @@ async function loadAllData() {
   renderCharts();
   renderBestDay();
   renderTables();
+  renderRekodSale();
+  renderRekodMarketing();
 }
 
 // ===== LOAD TETAPAN =====
@@ -604,18 +606,92 @@ function setPlatform(platform) {
 
 // ===== SECTION NAVIGATION =====
 function showSection(section) {
-  const sections = ['dashboard', 'ringkasan', 'comparison', 'data', 'settings'];
+  const sections = ['dashboard', 'ringkasan', 'comparison', 'rekod', 'settings'];
   sections.forEach(s => {
     const el = document.getElementById(`section${s.charAt(0).toUpperCase() + s.slice(1)}`);
     if (el) el.classList.toggle('hidden', s !== section);
   });
 
-  // Update nav active states
   document.querySelectorAll('.sidebar-nav li a, .nav-item').forEach(a => a.classList.remove('active'));
   event?.target?.closest('a, .nav-item')?.classList.add('active');
 
   if (section === 'ringkasan') loadWeeklyDefault();
   if (section === 'settings') loadSettingsDisplay();
+  if (section === 'rekod') { renderRekodSale(); renderRekodMarketing(); }
+}
+
+// ===== REKOD DATA TAB =====
+function setRekodTab(tab) {
+  document.querySelectorAll('.table-tab').forEach(t => t.classList.remove('active'));
+  event?.target?.classList.add('active');
+  document.getElementById('rekodSaleSection').classList.toggle('hidden', tab !== 'sale');
+  document.getElementById('rekodMarketingSection').classList.toggle('hidden', tab !== 'marketing');
+}
+
+function renderRekodSale() {
+  const tbody = document.getElementById('rekodSaleBody');
+  if (!tbody) return;
+
+  if (saleData.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state empty-state-text">Tiada data sale</div></td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = saleData.map(d => {
+    const sebab = Array.isArray(d.sebab_tak_close) ? d.sebab_tak_close.join(', ') : '-';
+    return `
+      <tr>
+        <td>${formatDate(d.tarikh)}</td>
+        <td>${formatNumber(d.lead_masuk)}</td>
+        <td>${formatNumber(d.lead_close)}</td>
+        <td>${formatPercent(d.closing_rate)}</td>
+        <td class="text-gold fw-700">${formatRM(d.total_sale)}</td>
+        <td>${d.bilangan_resit || 0}</td>
+        <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;" title="${sebab}">${sebab || '-'}</td>
+        <td style="max-width:100px;overflow:hidden;text-overflow:ellipsis;" title="${d.nota || ''}">${d.nota || '-'}</td>
+        <td>
+          <button onclick="editSale('${d.id}')" style="background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.4);color:#C9A84C;padding:5px 12px;border-radius:8px;cursor:pointer;font-size:12px;margin-right:4px;font-weight:600;">Edit</button>
+          <button onclick="deleteSale('${d.id}')" style="background:rgba(248,81,73,0.15);border:1px solid rgba(248,81,73,0.4);color:#F85149;padding:5px 12px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;">Padam</button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function renderRekodMarketing() {
+  const tbody = document.getElementById('rekodMarketingBody');
+  if (!tbody) return;
+  const showActions = currentProfile?.role === 'admin';
+
+  if (marketingData.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="12"><div class="empty-state empty-state-text">Tiada data marketing</div></td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = marketingData.map(d => {
+    const tarikh = d.is_bulk ? `${formatDate(d.tarikh_mula)}→${formatDate(d.tarikh_akhir)}` : formatDate(d.tarikh_mula);
+    return `
+      <tr>
+        <td style="white-space:nowrap;">${tarikh}</td>
+        <td><span class="badge badge-blue">${d.platform || '-'}</span></td>
+        <td><span class="badge badge-gold">${d.objektif || '-'}</span></td>
+        <td>${d.nama_post || '-'}</td>
+        <td>${formatRM(d.ad_spend)}</td>
+        <td>${formatRM(d.spend_sst)}</td>
+        <td>${formatNumber(d.reach)}</td>
+        <td>${d.ctr ? d.ctr + '%' : '-'}</td>
+        <td>${formatNumber(d.message_leads)}</td>
+        <td>${formatRM(d.cpl)}</td>
+        <td>${d.nota || '-'}</td>
+        <td>
+          ${showActions ? `
+            <button onclick="editMarketing('${d.id}')" style="background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.4);color:#C9A84C;padding:5px 12px;border-radius:8px;cursor:pointer;font-size:12px;margin-right:4px;font-weight:600;">Edit</button>
+            <button onclick="deleteMarketing('${d.id}')" style="background:rgba(248,81,73,0.15);border:1px solid rgba(248,81,73,0.4);color:#F85149;padding:5px 12px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;">Padam</button>
+          ` : '-'}
+        </td>
+      </tr>
+    `;
+  }).join('');
 }
 
 // ===== CHART TAB =====
