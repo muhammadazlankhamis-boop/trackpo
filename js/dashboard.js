@@ -461,10 +461,7 @@ function renderSaleTable() {
             <div style="font-weight:700;font-size:15px;color:var(--accent-gold);">${formatRM(d.total_sale)}</div>
             <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">${formatDate(d.tarikh)}</div>
           </div>
-          <div style="display:flex;gap:8px;">
-            <button onclick="editSale('${d.id}')" style="background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.4);color:#C9A84C;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;">Edit</button>
-            <button onclick="deleteSale('${d.id}')" style="background:rgba(248,81,73,0.15);border:1px solid rgba(248,81,73,0.4);color:#F85149;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;">Padam</button>
-          </div>
+
         </div>
         <div style="display:flex;flex-wrap:wrap;gap:16px;font-size:13px;">
           <div><span style="color:var(--text-secondary);">Lead Masuk:</span> <strong>${formatNumber(d.lead_masuk)}</strong></div>
@@ -511,10 +508,7 @@ function renderMarketingTable() {
           <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end;">
             <span class="badge badge-blue">${d.platform || '-'}</span>
             <span class="badge badge-gold">${d.objektif || '-'}</span>
-            ${showActions ? `
-              <button onclick="editMarketing('${d.id}')" style="background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.4);color:#C9A84C;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;">Edit</button>
-              <button onclick="deleteMarketing('${d.id}')" style="background:rgba(248,81,73,0.15);border:1px solid rgba(248,81,73,0.4);color:#F85149;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;">Padam</button>
-            ` : ''}
+
           </div>
         </div>
         <div style="display:flex;flex-wrap:wrap;gap:16px;font-size:13px;">
