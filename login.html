@@ -83,7 +83,7 @@
   <script>
     const SUPABASE_URL = 'https://dhyddyhbpmzstbhrsgrq.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_krPrYN9no79aBlSbKiXsmw_3VuyxrN';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     async function handleLogin() {
       const input = document.getElementById('inputLogin').value.trim();
@@ -98,7 +98,7 @@
       btn.innerHTML = '<span class="spinner"></span>Sedang log masuk...';
 
       const email = input.includes('@') ? input : `${input}@trackpo.app`;
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = await sb.auth.signInWithPassword({ email, password });
 
       if (error) {
         showError('Email/username atau password salah. Sila cuba semula.');
@@ -107,7 +107,7 @@
         return;
       }
 
-      const { data: profile } = await supabase
+      const { data: profile } = await sb
         .from('profiles').select('role').eq('id', data.user.id).single();
 
       window.location.href = profile?.role === 'admin' ? 'admin.html' : 'index.html';
@@ -121,9 +121,9 @@
 
     document.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleLogin(); });
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    sb.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        supabase.from('profiles').select('role').eq('id', session.user.id).single()
+        sb.from('profiles').select('role').eq('id', session.user.id).single()
           .then(({ data: profile }) => {
             window.location.href = profile?.role === 'admin' ? 'admin.html' : 'index.html';
           });
