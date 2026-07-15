@@ -166,7 +166,7 @@ async function saveMarketing() {
     nama_post: namaPost || null,
     link_post: document.getElementById('marketingLinkPost').value.trim() || null,
     ad_spend: adSpend,
-    spend_sst: parseFloat(document.getElementById('marketingSpendSST').value) || (adSpend * 1.1),
+    // spend_sst dikira auto oleh database: round(ad_spend * 1.1, 2)
     reach: parseInt(document.getElementById('marketingReach').value) || null,
     ctr: parseFloat(document.getElementById('marketingCTR').value) || null,
     message_leads: parseInt(document.getElementById('marketingLeads').value) || null,
