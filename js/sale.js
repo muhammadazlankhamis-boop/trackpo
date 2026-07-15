@@ -1,6 +1,6 @@
 // ===== TRACKPO — SALE CRUD =====
 
-function openSaleModal(editId = null) {
+function openSaleModal(editId) {
   document.getElementById('saleEditId').value = '';
   document.getElementById('modalSaleTitle').textContent = 'Tambah Data Sale';
   document.getElementById('saleDate').value = toInputDate(nowMY());
@@ -16,35 +16,30 @@ function openSaleModal(editId = null) {
 
   if (editId) {
     const record = saleData.find(d => d.id === editId);
-    if (record) populateSaleForm(record);
+    if (record) {
+      document.getElementById('modalSaleTitle').textContent = 'Edit Data Sale';
+      document.getElementById('saleEditId').value = record.id;
+      document.getElementById('saleDate').value = record.tarikh;
+      document.getElementById('saleLeadMasuk').value = record.lead_masuk;
+      document.getElementById('saleLeadClose').value = record.lead_close;
+      document.getElementById('saleClosingRate').value = formatPercent(record.closing_rate);
+      document.getElementById('saleTotalSale').value = record.total_sale;
+      document.getElementById('saleBilanganResit').value = record.bilangan_resit || '';
+      document.getElementById('saleNota').value = record.nota || '';
+      const sebab = record.sebab_tak_close || [];
+      document.querySelectorAll('.sebabCheck').forEach(c => {
+        c.checked = sebab.includes(c.value);
+        if (c.value === 'Lain-lain' && c.checked) {
+          document.getElementById('sebabLainText').classList.remove('hidden');
+        }
+      });
+      const lainItem = sebab.find(s => !['Customer tak balas','Survey','Tanya harga','Tak boleh buat','Lain-lain'].includes(s));
+      if (lainItem) document.getElementById('sebabLainText').value = lainItem;
+    }
   }
 
   closeFAB();
   document.getElementById('modalSale').classList.add('open');
-}
-
-function populateSaleForm(record) {
-  document.getElementById('modalSaleTitle').textContent = 'Edit Data Sale';
-  document.getElementById('saleEditId').value = record.id;
-  document.getElementById('saleDate').value = record.tarikh;
-  document.getElementById('saleLeadMasuk').value = record.lead_masuk;
-  document.getElementById('saleLeadClose').value = record.lead_close;
-  document.getElementById('saleClosingRate').value = formatPercent(record.closing_rate);
-  document.getElementById('saleTotalSale').value = record.total_sale;
-  document.getElementById('saleBilanganResit').value = record.bilangan_resit || '';
-  document.getElementById('saleNota').value = record.nota || '';
-
-  const sebab = record.sebab_tak_close || [];
-  document.querySelectorAll('.sebabCheck').forEach(c => {
-    c.checked = sebab.includes(c.value);
-    if (c.value === 'Lain-lain' && c.checked) {
-      document.getElementById('sebabLainText').classList.remove('hidden');
-    }
-  });
-
-  // Lain-lain free text
-  const lainItem = sebab.find(s => !['Customer tak balas','Survey','Tanya harga','Tak boleh buat','Lain-lain'].includes(s));
-  if (lainItem) document.getElementById('sebabLainText').value = lainItem;
 }
 
 function closeSaleModal() {
@@ -54,11 +49,7 @@ function closeSaleModal() {
 function calcClosingRate() {
   const masuk = parseInt(document.getElementById('saleLeadMasuk').value) || 0;
   const close = parseInt(document.getElementById('saleLeadClose').value) || 0;
-  if (masuk > 0) {
-    document.getElementById('saleClosingRate').value = ((close / masuk) * 100).toFixed(1) + '%';
-  } else {
-    document.getElementById('saleClosingRate').value = '';
-  }
+  document.getElementById('saleClosingRate').value = masuk > 0 ? ((close / masuk) * 100).toFixed(1) + '%' : '';
 }
 
 function toggleLainLain(checkbox) {
@@ -72,8 +63,7 @@ function getSebabList() {
   document.querySelectorAll('.sebabCheck:checked').forEach(c => {
     if (c.value === 'Lain-lain') {
       const lainText = document.getElementById('sebabLainText').value.trim();
-      if (lainText) sebab.push(lainText);
-      else sebab.push('Lain-lain');
+      sebab.push(lainText || 'Lain-lain');
     } else {
       sebab.push(c.value);
     }
@@ -92,7 +82,6 @@ async function saveSale() {
   const editId = document.getElementById('saleEditId').value;
 
   if (!date) { showToast('Sila isi tarikh', 'error'); return; }
-  if (leadMasuk < 0 || leadClose < 0) { showToast('Lead tidak boleh negatif', 'error'); return; }
   if (leadClose > leadMasuk) { showToast('Lead Close tidak boleh melebihi Lead Masuk', 'error'); return; }
 
   showLoading();
@@ -108,11 +97,7 @@ async function saveSale() {
     nota: nota || null,
     created_by: currentProfile.id,
     updated_at: new Date().toISOString()
-    // closing_rate dikira AUTO oleh database
   };
-
-  // Buang closing_rate dari payload — generated column
-  delete payload.closing_rate;
 
   let error;
   if (editId) {
@@ -123,51 +108,30 @@ async function saveSale() {
 
   hideLoading();
 
-  if (error) {
-    showToast('Gagal simpan data: ' + error.message, 'error');
-    return;
-  }
+  if (error) { showToast('Gagal simpan: ' + error.message, 'error'); return; }
 
-  // Log activity
-  await logActivity(
-    currentProfile.id,
-    currentClient.id,
+  await logActivity(currentProfile.id, currentClient.id,
     editId ? 'EDIT_SALE' : 'ADD_SALE',
-    `${editId ? 'Edit' : 'Tambah'} data sale: ${date}, Sale: ${formatRM(totalSale)}`,
+    `${editId ? 'Edit' : 'Tambah'} data sale: ${date}`,
     { tarikh: date, total_sale: totalSale }
   );
 
   closeSaleModal();
-  showToast(editId ? 'Data sale berjaya dikemaskini!' : 'Data sale berjaya ditambah!', 'success');
+  showToast(editId ? 'Data sale dikemaskini!' : 'Data sale ditambah!', 'success');
   await loadAllData();
 }
 
 function editSale(id) {
-  console.log('editSale dipanggil:', id);
   openSaleModal(id);
 }
 
-function deleteSale(id) {
-  console.log('deleteSale dipanggil:', id);
-  if (!confirmAction('Padam data sale ini?')) return;
-
 async function deleteSale(id) {
   if (!confirmAction('Padam data sale ini? Tindakan tidak boleh dibatalkan.')) return;
-
   showLoading();
   const { error } = await sbClient.from('data_sale').delete().eq('id', id);
   hideLoading();
-
-  if (error) {
-    showToast('Gagal padam data: ' + error.message, 'error');
-    return;
-  }
-
+  if (error) { showToast('Gagal padam: ' + error.message, 'error'); return; }
   await logActivity(currentProfile.id, currentClient.id, 'DELETE_SALE', 'Padam data sale', { id });
-  showToast('Data sale berjaya dipadam', 'success');
+  showToast('Data sale dipadam', 'success');
   await loadAllData();
 }
-
-// Expose to global scope
-window.editSale = editSale;
-window.deleteSale = deleteSale;
