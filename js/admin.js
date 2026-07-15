@@ -460,19 +460,16 @@ async function saveUser() {
 
   if (!clientId) { showToast('Sila pilih client', 'error'); return; }
   if (!username) { showToast('Sila isi username', 'error'); return; }
-  if (!password || password.length < 8) { showToast('Password mesti 8 aksara ke atas', 'error'); return; }
+  if (!password || password.length < 8) { showToast('Password mesti sekurang-kurangnya 8 aksara', 'error'); return; }
 
   showLoading();
   try {
     const email = `${username}@trackpo.app`;
-
-    const { data: authData, error: authError } = await sbSignup.auth.signUp({
-      email,
-      password
+    const { data: authData, error: authError } = await sbClient.auth.admin.createUser({
+      email, password, email_confirm: true
     });
 
     if (authError) throw authError;
-    if (!authData.user) throw new Error('Gagal cipta user');
 
     const { error: profileError } = await sbClient.from('profiles').insert({
       id: authData.user.id,
@@ -485,11 +482,10 @@ async function saveUser() {
     if (profileError) throw profileError;
 
     closeUserModal();
-    showToast('✅ Akaun berjaya dibuat! Username: ' + username + ' | Password: ' + password, 'success', 6000);
+    showToast(`Login berjaya dibuat! Username: ${username}`, 'success');
     loadUsersTable();
-
   } catch (err) {
-    showToast('Gagal: ' + err.message, 'error');
+    showToast('Gagal buat akaun: ' + err.message, 'error');
   } finally {
     hideLoading();
   }
@@ -523,7 +519,7 @@ async function loadActivityLog() {
 
     let query = sbClient
       .from('activity_log')
-      .select('*, profiles(nama), clients(nama_bisnes)')
+      .select('*')
       .order('created_at', { ascending: false })
       .range(0, LOG_PER_PAGE - 1);
 
@@ -531,6 +527,22 @@ async function loadActivityLog() {
 
     const { data: logs, error } = await query;
     if (error) throw error;
+
+    // Ambil nama profile dan client secara berasingan
+    const userIds = [...new Set((logs || []).map(l => l.user_id).filter(Boolean))];
+    const clientIds = [...new Set((logs || []).map(l => l.client_id).filter(Boolean))];
+
+    const profileMap = {};
+    if (userIds.length > 0) {
+      const { data: profiles } = await sbClient.from('profiles').select('id, nama').in('id', userIds);
+      (profiles || []).forEach(p => { profileMap[p.id] = p.nama; });
+    }
+
+    const clientMap = {};
+    if (clientIds.length > 0) {
+      const { data: clients } = await sbClient.from('clients').select('id, nama_bisnes').in('id', clientIds);
+      (clients || []).forEach(c => { clientMap[c.id] = c.nama_bisnes; });
+    }
 
     const tbody = document.getElementById('logTableBody');
     if (!tbody) return;
@@ -552,8 +564,8 @@ async function loadActivityLog() {
       return `
         <tr>
           <td style="font-size:12px;white-space:nowrap;">${masaStr}</td>
-          <td>${l.profiles?.nama || '-'}</td>
-          <td>${l.clients?.nama_bisnes || '-'}</td>
+          <td>${profileMap[l.user_id] || '-'}</td>
+          <td>${clientMap[l.client_id] || '-'}</td>
           <td><span class="badge ${badgeClass}" style="font-size:10px;">${l.action_type}</span></td>
           <td style="font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;">${l.description || '-'}</td>
         </tr>

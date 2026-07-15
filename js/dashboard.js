@@ -277,11 +277,14 @@ function updateKPICards() {
 
   // Lead
   document.getElementById('kpiLead').textContent = formatNumber(totalLeadAds);
-  document.getElementById('kpiLeadSub').textContent = `Ads: ${formatNumber(totalLeadAds)} / Real: ${formatNumber(totalLeadClose)}`;
-  const leadGap = totalLeadAds - totalLeadClose;
+  document.getElementById('kpiLeadSub').innerHTML =
+    `<span style="color:var(--info)">Ads: ${formatNumber(totalLeadAds)}</span> | ` +
+    `<span>Masuk: ${formatNumber(totalLeadMasuk)}</span> | ` +
+    `<span style="color:var(--positive)">Close: ${formatNumber(totalLeadClose)}</span>`;
   const leadGapEl = document.getElementById('kpiLeadGap');
-  if (leadGap > 0) {
-    leadGapEl.textContent = `Gap: ${formatNumber(leadGap)} lead`;
+  const gapAdsMasuk = totalLeadAds - totalLeadMasuk;
+  if (gapAdsMasuk > 0) {
+    leadGapEl.textContent = `Gap Ads→Masuk: ${formatNumber(gapAdsMasuk)}`;
     leadGapEl.className = 'kpi-gap negative';
   } else {
     leadGapEl.textContent = '';
