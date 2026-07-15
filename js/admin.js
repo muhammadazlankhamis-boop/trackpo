@@ -460,16 +460,19 @@ async function saveUser() {
 
   if (!clientId) { showToast('Sila pilih client', 'error'); return; }
   if (!username) { showToast('Sila isi username', 'error'); return; }
-  if (!password || password.length < 8) { showToast('Password mesti sekurang-kurangnya 8 aksara', 'error'); return; }
+  if (!password || password.length < 8) { showToast('Password mesti 8 aksara ke atas', 'error'); return; }
 
   showLoading();
   try {
     const email = `${username}@trackpo.app`;
-    const { data: authData, error: authError } = await sbClient.auth.admin.createUser({
-      email, password, email_confirm: true
+
+    const { data: authData, error: authError } = await sbSignup.auth.signUp({
+      email,
+      password
     });
 
     if (authError) throw authError;
+    if (!authData.user) throw new Error('Gagal cipta user');
 
     const { error: profileError } = await sbClient.from('profiles').insert({
       id: authData.user.id,
@@ -482,10 +485,11 @@ async function saveUser() {
     if (profileError) throw profileError;
 
     closeUserModal();
-    showToast(`Login berjaya dibuat! Username: ${username}`, 'success');
+    showToast('✅ Akaun berjaya dibuat! Username: ' + username + ' | Password: ' + password, 'success', 6000);
     loadUsersTable();
+
   } catch (err) {
-    showToast('Gagal buat akaun: ' + err.message, 'error');
+    showToast('Gagal: ' + err.message, 'error');
   } finally {
     hideLoading();
   }
