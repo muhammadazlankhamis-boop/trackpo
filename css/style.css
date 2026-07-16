@@ -1376,7 +1376,14 @@ tbody td { padding: var(--sp-3) var(--sp-4); white-space: nowrap; }
 
   .bottom-nav { display: flex; }
 
-  .fab-container { display: none; }
+  .fab-container {
+    display: flex;
+    bottom: calc(var(--nav-h) + var(--sp-3));
+    right: var(--sp-4);
+    pointer-events: none;
+  }
+
+  .fab-main { display: none; }
 
   .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: var(--sp-3); }
 
