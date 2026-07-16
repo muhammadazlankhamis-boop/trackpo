@@ -733,6 +733,46 @@ function closeFAB() {
   document.getElementById('fabMain')?.classList.remove('open');
 }
 
+// Mobile FAB — buka sheet pilihan
+function openFabMenu() {
+  const isAdmin = currentProfile?.role === 'admin';
+  const options = [
+    { label: '💰 Tambah Data Sale', fn: 'openSaleModal()' },
+    ...(isAdmin ? [{ label: '📣 Tambah Data Marketing', fn: 'openMarketingModal()' }] : []),
+    ...(isAdmin ? [{ label: '💳 Topup Bajet', fn: 'openTopupModal()' }] : []),
+  ];
+
+  // Simple — tunjuk sebagai action sheet
+  const sheet = document.createElement('div');
+  sheet.style.cssText = 'position:fixed;inset:0;z-index:2000;';
+
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:absolute;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);';
+  overlay.onclick = () => document.body.removeChild(sheet);
+
+  const menu = document.createElement('div');
+  menu.style.cssText = `position:absolute;bottom:0;left:0;right:0;background:var(--bg-card);border-radius:20px 20px 0 0;padding:16px;border:1px solid var(--border-strong);border-bottom:none;padding-bottom:calc(16px + env(safe-area-inset-bottom));`;
+
+  const handle = document.createElement('div');
+  handle.style.cssText = 'width:36px;height:4px;background:var(--border-strong);border-radius:99px;margin:0 auto 20px;';
+  menu.appendChild(handle);
+
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.style.cssText = `width:100%;padding:14px 16px;border:none;background:var(--bg-input);border-radius:12px;color:var(--text-primary);font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;margin-bottom:10px;text-align:left;transition:background 0.15s;`;
+    btn.textContent = opt.label;
+    btn.onclick = () => {
+      document.body.removeChild(sheet);
+      eval(opt.fn);
+    };
+    menu.appendChild(btn);
+  });
+
+  sheet.appendChild(overlay);
+  sheet.appendChild(menu);
+  document.body.appendChild(sheet);
+}
+
 // ===== SETTINGS =====
 function loadSettingsDisplay() {
   document.getElementById('settingNama').textContent = currentClient?.nama_bisnes || '-';
