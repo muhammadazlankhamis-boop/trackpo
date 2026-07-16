@@ -23,8 +23,13 @@
 
   <!-- SIDEBAR (Desktop) -->
   <aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo">TRACKPO</div>
-    <p class="sidebar-sub">Aipromarketing</p>
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark">T</div>
+      <div class="sidebar-brand">
+        <div class="sidebar-brand-name">TRACKPO</div>
+        <div class="sidebar-brand-sub">Aipromarketing</div>
+      </div>
+    </div>
     <ul class="sidebar-nav">
       <li><a href="#" class="active" onclick="showSection('dashboard')">
         <span class="nav-icon">🏠</span> Dashboard
@@ -44,7 +49,7 @@
     </ul>
     <div class="sidebar-user">
       <div class="user-avatar" id="sidebarAvatar">A</div>
-      <div>
+      <div class="user-info">
         <div class="user-name" id="sidebarName">-</div>
         <div class="user-role" id="sidebarRole">Client</div>
       </div>
@@ -54,20 +59,22 @@
   <!-- MAIN CONTENT -->
   <main class="main-content">
 
-    <!-- TOP BAR -->
-    <div class="top-bar">
-      <div class="client-name-header" id="clientNameHeader">-</div>
-      <div class="top-bar-right">
-        <div class="notif-bell" id="notifBell" onclick="toggleNotif()">
+    <!-- TOP HEADER -->
+    <div class="top-header">
+      <div class="top-header-left">
+        <div class="greeting-text" id="greetingText">Selamat datang 👋</div>
+        <div class="greeting-sub" id="clientNameHeader">Aipromarketing</div>
+      </div>
+      <div class="top-header-right">
+        <div class="icon-btn" id="notifBell" onclick="toggleNotif()">
           🔔
           <div class="notif-dot hidden" id="notifDot"></div>
         </div>
-        <button class="btn btn-secondary" onclick="logout()" style="font-size:13px;padding:8px 14px;">
-          Log Keluar
-        </button>
+        <button class="btn-logout" onclick="logout()">Log Keluar</button>
       </div>
     </div>
 
+    <div class="page-content">
     <!-- ==================== SECTION: DASHBOARD ==================== -->
     <section id="sectionDashboard">
 
@@ -117,63 +124,95 @@
       </div>
 
       <!-- KPI CARDS -->
-      <div class="kpi-grid" id="kpiGrid">
-        <!-- JS akan populate -->
-        <div class="kpi-card kpi-gold">
+      <div class="kpi-grid">
+
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <div class="kpi-icon gold">💰</div>
+            <div class="kpi-change neutral" id="kpiAdSpendChange">—</div>
+          </div>
           <div class="kpi-label">Ad Spend</div>
           <div class="kpi-value" id="kpiAdSpend">-</div>
           <div class="kpi-sub">Belanja iklan (tanpa SST)</div>
         </div>
 
-        <div class="kpi-card kpi-orange">
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <div class="kpi-icon orange">💳</div>
+            <div class="kpi-change neutral" id="kpiAdSpendSSTChange">—</div>
+          </div>
           <div class="kpi-label">Ad Spend+SST</div>
           <div class="kpi-value" id="kpiAdSpendSST">-</div>
           <div class="kpi-sub">Termasuk SST 10%</div>
         </div>
 
-        <div class="kpi-card kpi-blue">
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <div class="kpi-icon blue">👥</div>
+            <div class="kpi-change neutral" id="kpiLeadChange">—</div>
+          </div>
           <div class="kpi-label">Lead</div>
           <div class="kpi-value" id="kpiLead">-</div>
-          <div class="kpi-sub" id="kpiLeadSub">Lead Ads / Real</div>
-          <div class="kpi-gap" id="kpiLeadGap"></div>
+          <div class="kpi-sub" id="kpiLeadSub">Ads | Masuk | Close</div>
+          <div id="kpiLeadGap" style="margin-top:4px;font-size:11px;"></div>
         </div>
 
-        <div class="kpi-card kpi-purple">
-          <div class="kpi-label">CPL</div>
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <div class="kpi-icon purple">📉</div>
+            <div class="kpi-change neutral" id="kpiCPLChange">—</div>
+          </div>
+          <div class="kpi-label">CPL Real</div>
           <div class="kpi-value" id="kpiCPL">-</div>
-          <div class="kpi-sub" id="kpiCPLSub">CPL Ads / Real</div>
+          <div class="kpi-sub" id="kpiCPLSub">Kos per lead</div>
           <div id="kpiCPLBadge" style="margin-top:6px;"></div>
         </div>
 
-        <div class="kpi-card kpi-green">
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <div class="kpi-icon green">💵</div>
+            <div class="kpi-change neutral" id="kpiSaleChange">—</div>
+          </div>
           <div class="kpi-label">Total Sale</div>
           <div class="kpi-value" id="kpiSale">-</div>
-          <div class="kpi-sub" id="kpiSaleSub">Target bulan</div>
-          <div class="progress-bar">
-            <div class="progress-fill fill-green" id="kpiSaleProgress" style="width:0%"></div>
+          <div class="kpi-sub" id="kpiSaleSub">vs target</div>
+          <div class="kpi-progress">
+            <div class="kpi-progress-fill fill-green" id="kpiSaleProgress" style="width:0%"></div>
           </div>
         </div>
 
-        <div class="kpi-card kpi-teal">
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <div class="kpi-icon teal">🎯</div>
+            <div class="kpi-change neutral" id="kpiClosingChange">—</div>
+          </div>
           <div class="kpi-label">Closing Rate</div>
           <div class="kpi-value" id="kpiClosing">-</div>
-          <div class="kpi-sub" id="kpiClosingSub">-</div>
-          <div class="progress-bar">
-            <div class="progress-fill fill-green" id="kpiClosingProgress" style="width:0%"></div>
+          <div class="kpi-sub" id="kpiClosingSub">Lead masuk vs close</div>
+          <div class="kpi-progress">
+            <div class="kpi-progress-fill fill-gold" id="kpiClosingProgress" style="width:0%"></div>
           </div>
         </div>
 
-        <div class="kpi-card kpi-red">
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <div class="kpi-icon red">🏦</div>
+            <div id="kpiBalanceBadge"></div>
+          </div>
           <div class="kpi-label">Balance Bajet</div>
           <div class="kpi-value" id="kpiBalance">-</div>
-          <div style="margin-top:6px;" id="kpiBalanceBadge"></div>
         </div>
 
-        <div class="kpi-card kpi-blue">
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <div class="kpi-icon blue">📊</div>
+            <div id="kpiROASBadge"></div>
+          </div>
           <div class="kpi-label">ROAS</div>
           <div class="kpi-value" id="kpiROAS">-</div>
-          <div style="margin-top:6px;" id="kpiROASBadge"></div>
+          <div class="kpi-sub">Return on ad spend</div>
         </div>
+
       </div>
 
       <!-- CHART SECTION -->
@@ -494,6 +533,7 @@
       </div>
     </section>
 
+    </div><!-- end page-content -->
   </main>
 </div>
 

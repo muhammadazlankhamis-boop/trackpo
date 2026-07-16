@@ -66,10 +66,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  // Set nama
+  // Set nama + greeting
   document.getElementById('clientNameHeader').textContent = currentClient.nama_bisnes || '-';
   document.getElementById('sidebarName').textContent = currentProfile.nama || '-';
   document.getElementById('sidebarAvatar').textContent = (currentProfile.nama || 'U')[0].toUpperCase();
+
+  // Greeting berdasarkan waktu Malaysia
+  const hour = nowMY().getHours();
+  const greetWord = hour < 12 ? 'Selamat Pagi' : hour < 15 ? 'Selamat Tengah Hari' : hour < 19 ? 'Selamat Petang' : 'Selamat Malam';
+  const greetEmoji = hour < 12 ? '🌤️' : hour < 15 ? '☀️' : hour < 19 ? '🌤️' : '🌙';
+  const nameDisplay = currentProfile.nama || currentClient.nama_bisnes || '';
+  const greetEl = document.getElementById('greetingText');
+  if (greetEl) greetEl.textContent = `${greetWord}, ${nameDisplay} ${greetEmoji}`;
 
   // Load tetapan
   await loadTetapan();
