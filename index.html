@@ -95,32 +95,64 @@
         <button class="alert-dismiss" onclick="this.parentElement.classList.add('hidden')">×</button>
       </div>
 
-      <!-- Date Filter -->
-      <div class="filter-section">
-        <div class="filter-bar">
-          <button class="filter-btn" onclick="setFilter('harini')">Harini</button>
-          <button class="filter-btn" onclick="setFilter('semalam')">Semalam</button>
-          <button class="filter-btn" onclick="setFilter('7hari')">7 Hari</button>
-          <button class="filter-btn active" id="btnBulanIni" onclick="setFilter('bulan-ini')">Bulan Ini</button>
-          <button class="filter-btn" onclick="setFilter('bulan-lepas')">Bulan Lepas</button>
-          <button class="filter-btn" onclick="setFilter('semua')">Semua</button>
-          <button class="filter-btn" onclick="setFilter('custom')">Custom</button>
+      <!-- Filter Bar Combined -->
+      <div class="filter-row-combined">
+
+        <!-- Date Dropdown -->
+        <div class="filter-dropdown-wrap" id="filterDropdownWrap">
+          <button class="filter-dropdown-btn" id="filterDropdownBtn" onclick="toggleFilterDropdown()">
+            <span id="filterDropdownLabel">📅 Bulan Ini</span>
+            <span class="filter-dropdown-arrow">▾</span>
+          </button>
+          <div class="filter-dropdown-menu" id="filterDropdownMenu">
+            <div class="filter-dropdown-item selected" data-filter="harini" onclick="setFilterDrop('harini','⏰ Harini')">
+              ⏰ Harini <span class="check">✓</span>
+            </div>
+            <div class="filter-dropdown-item" data-filter="semalam" onclick="setFilterDrop('semalam','📅 Semalam')">
+              📅 Semalam <span class="check">✓</span>
+            </div>
+            <div class="filter-dropdown-item" data-filter="7hari" onclick="setFilterDrop('7hari','📆 7 Hari')">
+              📆 7 Hari <span class="check">✓</span>
+            </div>
+            <div class="filter-dropdown-item selected" data-filter="bulan-ini" onclick="setFilterDrop('bulan-ini','📅 Bulan Ini')">
+              📅 Bulan Ini <span class="check">✓</span>
+            </div>
+            <div class="filter-dropdown-item" data-filter="bulan-lepas" onclick="setFilterDrop('bulan-lepas','◀ Bulan Lepas')">
+              ◀ Bulan Lepas <span class="check">✓</span>
+            </div>
+            <div class="filter-dropdown-item" data-filter="semua" onclick="setFilterDrop('semua','∞ Semua')">
+              ∞ Semua <span class="check">✓</span>
+            </div>
+            <div class="filter-dropdown-item" data-filter="custom" onclick="setFilterDrop('custom','🗓 Custom')">
+              🗓 Custom <span class="check">✓</span>
+            </div>
+          </div>
         </div>
 
-        <!-- Custom date picker -->
-        <div class="custom-date-row" id="customDateRow">
-          <input type="date" id="customStart" onchange="applyCustomFilter()" />
-          <span style="color:var(--text-secondary)">hingga</span>
-          <input type="date" id="customEnd" onchange="applyCustomFilter()" />
-          <button class="btn-clear-date" onclick="clearCustomFilter()">Clear</button>
+        <!-- Divider -->
+        <div class="filter-divider"></div>
+
+        <!-- Platform Logos -->
+        <div class="platform-logos">
+          <button class="platform-logo-btn all active" onclick="setPlatformLogo(this, 'semua')">
+            <span class="logo-dot"></span> Semua
+          </button>
+          <button class="platform-logo-btn meta" onclick="setPlatformLogo(this, 'Meta Ads')">
+            <span class="logo-dot"></span> Meta
+          </button>
+          <button class="platform-logo-btn tiktok" onclick="setPlatformLogo(this, 'TikTok Ads')">
+            <span class="logo-dot"></span> TikTok
+          </button>
         </div>
 
-        <!-- Platform Filter -->
-        <div class="platform-bar" style="margin-top:10px;">
-          <button class="platform-btn active" onclick="setPlatform('semua')">Semua</button>
-          <button class="platform-btn" onclick="setPlatform('Meta Ads')">Meta</button>
-          <button class="platform-btn" onclick="setPlatform('TikTok Ads')">TikTok</button>
-        </div>
+      </div>
+
+      <!-- Custom date picker (shown when Custom selected) -->
+      <div class="custom-date-row" id="customDateRow" style="margin-bottom:16px;">
+        <input type="date" id="customStart" onchange="applyCustomFilter()" />
+        <span style="color:var(--text-secondary);font-size:13px;">hingga</span>
+        <input type="date" id="customEnd" onchange="applyCustomFilter()" />
+        <button class="btn-clear-date" onclick="clearCustomFilter()">Clear</button>
       </div>
 
       <!-- KPI CARDS -->

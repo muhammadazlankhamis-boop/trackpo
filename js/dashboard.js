@@ -581,6 +581,56 @@ function setFilter(filter) {
   }
 }
 
+// ===== FILTER DROPDOWN =====
+function toggleFilterDropdown() {
+  const btn = document.getElementById('filterDropdownBtn');
+  const menu = document.getElementById('filterDropdownMenu');
+  const isOpen = menu.classList.contains('open');
+
+  // Close on click outside
+  if (!isOpen) {
+    setTimeout(() => {
+      document.addEventListener('click', closeFilterDropdownOutside, { once: true });
+    }, 0);
+  }
+
+  btn.classList.toggle('open', !isOpen);
+  menu.classList.toggle('open', !isOpen);
+}
+
+function closeFilterDropdownOutside(e) {
+  const wrap = document.getElementById('filterDropdownWrap');
+  if (wrap && !wrap.contains(e.target)) {
+    document.getElementById('filterDropdownBtn')?.classList.remove('open');
+    document.getElementById('filterDropdownMenu')?.classList.remove('open');
+  }
+}
+
+function setFilterDrop(filter, label) {
+  // Update label
+  document.getElementById('filterDropdownLabel').textContent = label;
+
+  // Update selected state
+  document.querySelectorAll('.filter-dropdown-item').forEach(item => {
+    item.classList.toggle('selected', item.dataset.filter === filter);
+  });
+
+  // Close dropdown
+  document.getElementById('filterDropdownBtn')?.classList.remove('open');
+  document.getElementById('filterDropdownMenu')?.classList.remove('open');
+
+  // Apply filter
+  setFilter(filter);
+}
+
+function setPlatformLogo(btn, platform) {
+  document.querySelectorAll('.platform-logo-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentPlatform = platform;
+  salePage = 1; marketingPage = 1;
+  loadAllData();
+}
+
 function applyCustomFilter() {
   const start = document.getElementById('customStart').value;
   const end = document.getElementById('customEnd').value;
