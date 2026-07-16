@@ -288,7 +288,7 @@ function applyTheme(theme) {
 }
 
 function loadTheme() {
-  const saved = localStorage.getItem('trackpo_theme') || 'dark';
+  const saved = localStorage.getItem('trackpo_theme') || 'light';
   applyTheme(saved);
   return saved;
 }

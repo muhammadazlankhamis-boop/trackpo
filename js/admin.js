@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (nameEl) nameEl.textContent = profile.nama || 'Admin';
     if (avatarEl) avatarEl.textContent = (profile.nama || 'A')[0].toUpperCase();
 
-    const savedTheme = localStorage.getItem('trackpo_theme') || 'dark';
+    const savedTheme = localStorage.getItem('trackpo_theme') || 'light';
     const toggle = document.getElementById('adminThemeToggle');
     if (toggle) toggle.checked = savedTheme === 'dark';
 

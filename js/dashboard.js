@@ -91,8 +91,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   hideLoading();
 
   // Theme toggle
-  const savedTheme = localStorage.getItem('trackpo_theme') || 'dark';
-  document.getElementById('themeToggle').checked = savedTheme === 'dark';
+  const savedTheme = localStorage.getItem('trackpo_theme') || 'light';
+  const themeEl = document.getElementById('themeToggle');
+  if (themeEl) themeEl.checked = savedTheme === 'dark';
 
   // Update last login
   updateLastLogin(currentProfile.id);
