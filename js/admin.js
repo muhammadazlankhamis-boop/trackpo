@@ -150,6 +150,9 @@ async function loadClientExtraData(clientIds) {
       if (!lastUpdateMap[d.client_id]) lastUpdateMap[d.client_id] = d.created_at;
     });
 
+    // Store globally for stale modal
+    window._lastUpdateMap = lastUpdateMap;
+
     // Update stats
     let alertCount = 0;
     let staleCount = 0;
@@ -195,54 +198,104 @@ function renderClientCards(clients, topupMap, spendMap, lastUpdateMap) {
     const healthScore = isStale ? 20 : balance < 0 ? 30 : hasAlert ? 50 : 75;
     const health = getHealthLabel(healthScore);
 
-    const updateText = daysSinceUpdate === null ? 'Tiada data' :
+    const updateText = daysSinceUpdate === null ? 'Belum ada data' :
       daysSinceUpdate === 0 ? 'Hari ini' :
       daysSinceUpdate === 1 ? 'Semalam' :
       `${daysSinceUpdate} hari lepas`;
 
-    const updateClass = isStale ? 'stale' : 'fresh';
     const totalTopup = topupMap[client.id] || 0;
     const totalSpend = spendMap[client.id] || 0;
     const usedPct = totalTopup > 0 ? Math.min((totalSpend / totalTopup) * 100, 100) : 0;
+    const balanceColor = balance < 0 ? 'var(--red)' : hasAlert ? 'var(--orange)' : 'var(--green)';
+    const borderColor = isStale ? 'var(--orange)' : hasAlert ? 'var(--red)' : balance < 0 ? 'var(--red)' : 'var(--primary)';
 
     return `
-      <div class="client-card">
+      <div class="client-card" style="border-left: 4px solid ${borderColor};">
         <div class="client-card-header">
           <div>
             <div class="client-name">${client.nama_bisnes}</div>
             <div class="client-pakej">${client.pakej || 'Tiada pakej'}</div>
           </div>
-          <div class="health-circle ${health.class}">${healthScore}</div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+            <div class="health-circle ${health.class}">${healthScore}</div>
+            <span class="badge ${client.status === 'Aktif' ? 'badge-green' : 'badge-red'}" style="font-size:10px;">${client.status || 'Aktif'}</span>
+          </div>
         </div>
-        <div class="client-card-stats">
-          <div class="client-stat-row">
-            <span class="client-stat-label">Balance Bajet</span>
-            <span class="client-stat-value ${balance < 0 ? 'text-red' : ''}">${formatRM(Math.abs(balance))}</span>
+
+        <div style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+            <span style="font-size:12px;color:var(--text-secondary);">Balance Bajet</span>
+            <span style="font-size:14px;font-weight:700;color:${balanceColor};">${formatRM(Math.abs(balance))}</span>
           </div>
           <div class="progress-bar">
-            <div class="progress-fill ${balance < 0 ? 'fill-red' : hasAlert ? 'fill-yellow' : 'fill-green'}" style="width:${usedPct}%"></div>
+            <div class="progress-fill" style="width:${usedPct}%;background:${usedPct > 90 ? 'var(--red)' : usedPct > 70 ? 'var(--orange)' : 'var(--green)'};"></div>
           </div>
-          <div class="client-stat-row" style="margin-top:8px;">
-            <span class="client-stat-label">Total Topup</span>
-            <span class="client-stat-value">${formatRM(totalTopup)}</span>
-          </div>
-        </div>
-        <div class="client-card-footer">
-          <span class="last-update-badge ${updateClass}">🕐 ${updateText}</span>
-          <div style="display:flex;gap:6px;">
-            ${hasAlert ? '<span class="badge badge-yellow">⚠️ Alert</span>' : ''}
-            <span class="badge ${client.status === 'Aktif' ? 'badge-green' : 'badge-red'}">${client.status || 'Aktif'}</span>
+          <div style="display:flex;justify-content:space-between;margin-top:4px;">
+            <span style="font-size:11px;color:var(--text-secondary);">Total Topup: ${formatRM(totalTopup)}</span>
+            <span style="font-size:11px;color:var(--text-secondary);">${usedPct.toFixed(0)}% digunakan</span>
           </div>
         </div>
-        <div style="margin-top:12px;display:flex;gap:6px;">
-          <button class="btn btn-primary" style="flex:1;font-size:12px;padding:8px;" onclick="openClientDashboard('${client.id}')">
-            Buka Dashboard
-          </button>
-          <button class="btn btn-secondary" style="font-size:12px;padding:8px 10px;" onclick="openClientSettingsModal('${client.id}')">⚙️</button>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid var(--border);">
+          <span class="last-update-badge ${isStale ? 'stale' : 'fresh'}">
+            🕐 ${updateText}
+            ${hasAlert ? '<span class="badge badge-yellow" style="margin-left:6px;font-size:10px;">⚠️ Alert</span>' : ''}
+          </span>
+          <div style="display:flex;gap:8px;">
+            <button onclick="openClientDashboard('${client.id}')" class="btn-action-primary">
+              Buka
+            </button>
+            <button onclick="openClientSettingsModal('${client.id}')" class="btn-action-ghost">⚙️</button>
+          </div>
         </div>
       </div>
     `;
   }).join('');
+}
+
+
+function openStaleModal() {
+  const modal = document.getElementById('modalStaleClients');
+  const listEl = document.getElementById('staleClientsList');
+  if (!modal || !listEl) return;
+
+  // Build list from allClients + lastUpdateMap
+  const staleClients = [];
+  allClients.forEach(client => {
+    // We need lastUpdateMap - store it globally
+    const lastUpdate = window._lastUpdateMap?.[client.id];
+    const daysSinceUpdate = lastUpdate ? daysSince(lastUpdate) : null;
+    if (daysSinceUpdate === null || daysSinceUpdate > 2) {
+      staleClients.push({
+        nama: client.nama_bisnes,
+        lastUpdate,
+        days: daysSinceUpdate
+      });
+    }
+  });
+
+  if (staleClients.length === 0) {
+    listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">✅</div><div class="empty-state-text">Semua client dah update data terkini!</div></div>';
+  } else {
+    listEl.innerHTML = staleClients.map(c => {
+      const updateText = c.days === null ? 'Belum pernah ada data' :
+        c.days === 0 ? 'Hari ini' :
+        c.days === 1 ? 'Semalam' :
+        `${c.days} hari lepas`;
+      const isVeryStale = c.days === null || c.days > 7;
+      return `
+        <div class="topup-item" style="padding:14px 0;">
+          <div>
+            <div style="font-weight:700;font-size:14px;margin-bottom:3px;">${c.nama}</div>
+            <div style="font-size:12px;color:var(--text-secondary);">Last update: ${c.lastUpdate ? formatDate(c.lastUpdate) : 'Tiada rekod'}</div>
+          </div>
+          <span class="badge ${isVeryStale ? 'badge-red' : 'badge-yellow'}">${updateText}</span>
+        </div>
+      `;
+    }).join('');
+  }
+
+  modal.classList.add('open');
 }
 
 function openClientDashboard(clientId) {
@@ -264,21 +317,62 @@ async function loadClientsTable() {
       return;
     }
 
-    tbody.innerHTML = clients.map(c => `
-      <tr>
-        <td>${c.nama_bisnes}</td>
-        <td>${c.nama_pic || '-'}</td>
-        <td>${c.email || '-'}</td>
-        <td>${c.telefon || '-'}</td>
-        <td><span class="badge badge-gold">${c.pakej || '-'}</span></td>
-        <td>${formatDate(c.tarikh_mula)}</td>
-        <td><span class="badge ${c.status === 'Aktif' ? 'badge-green' : 'badge-red'}">${c.status || 'Aktif'}</span></td>
-        <td>
-          <button class="action-btn" onclick="editClient('${c.id}')">✏️</button>
-          <button class="action-btn delete" onclick="deleteClient('${c.id}')">🗑️</button>
-        </td>
-      </tr>
-    `).join('');
+    // Desktop: table rows
+    // Mobile: cards
+    const isMobile = window.innerWidth < 769;
+
+    if (isMobile) {
+      // Wrap in card container
+      const cardWrapper = document.createElement('div');
+      cardWrapper.className = 'mobile-card-list';
+      cardWrapper.innerHTML = clients.map(c => `
+        <div class="mobile-data-card">
+          <div class="mobile-data-card-header">
+            <div>
+              <div class="mobile-data-card-title">${c.nama_bisnes}</div>
+              <div class="mobile-data-card-sub">${c.pakej || 'Tiada pakej'}</div>
+            </div>
+            <span class="badge ${c.status === 'Aktif' ? 'badge-green' : 'badge-red'}">${c.status || 'Aktif'}</span>
+          </div>
+          <div class="mobile-data-card-body">
+            <div class="mobile-data-row"><span>PIC</span><span>${c.nama_pic || '-'}</span></div>
+            <div class="mobile-data-row"><span>Email</span><span>${c.email || '-'}</span></div>
+            <div class="mobile-data-row"><span>Telefon</span><span>${c.telefon || '-'}</span></div>
+            <div class="mobile-data-row"><span>Tarikh Mula</span><span>${formatDate(c.tarikh_mula)}</span></div>
+          </div>
+          <div class="mobile-data-card-actions">
+            <button onclick="editClient('${c.id}')" class="btn-edit">Edit</button>
+            <button onclick="deleteClient('${c.id}')" class="btn-delete">Padam</button>
+          </div>
+        </div>
+      `).join('');
+      const wrapper = document.querySelector('#adminSectionClients .table-wrapper');
+      if (wrapper) { wrapper.style.display = 'none'; }
+      const section = document.getElementById('adminSectionClients');
+      const existing = section.querySelector('.mobile-card-list');
+      if (existing) existing.remove();
+      section.appendChild(cardWrapper);
+    } else {
+      const wrapper = document.querySelector('#adminSectionClients .table-wrapper');
+      if (wrapper) wrapper.style.display = '';
+      const existing = document.querySelector('#adminSectionClients .mobile-card-list');
+      if (existing) existing.remove();
+      tbody.innerHTML = clients.map(c => `
+        <tr>
+          <td>${c.nama_bisnes}</td>
+          <td>${c.nama_pic || '-'}</td>
+          <td>${c.email || '-'}</td>
+          <td>${c.telefon || '-'}</td>
+          <td><span class="badge badge-gold">${c.pakej || '-'}</span></td>
+          <td>${formatDate(c.tarikh_mula)}</td>
+          <td><span class="badge ${c.status === 'Aktif' ? 'badge-green' : 'badge-red'}">${c.status || 'Aktif'}</span></td>
+          <td>
+            <button onclick="editClient('${c.id}')" class="btn-edit">Edit</button>
+            <button onclick="deleteClient('${c.id}')" class="btn-delete">Padam</button>
+          </td>
+        </tr>
+      `).join('');
+    }
   } catch (err) {
     showToast('Gagal load clients: ' + err.message, 'error');
   } finally {
@@ -419,16 +513,50 @@ async function loadUsersTable() {
       return;
     }
 
-    tbody.innerHTML = users.map(u => `
-      <tr>
-        <td>${u.nama || '-'}</td>
-        <td>${u.email || '-'}</td>
-        <td><span class="badge ${u.role === 'admin' ? 'badge-purple' : 'badge-blue'}">${u.role}</span></td>
-        <td>${u.clients?.nama_bisnes || '-'}</td>
-        <td>${u.last_login ? formatDate(u.last_login) : 'Belum pernah'}</td>
-        <td><button class="action-btn delete" onclick="deleteUser('${u.id}', '${u.email}')">🗑️</button></td>
-      </tr>
-    `).join('');
+    const isMobileU = window.innerWidth < 769;
+    if (isMobileU) {
+      const wrapper = document.querySelector('#adminSectionUsers .table-wrapper');
+      if (wrapper) wrapper.style.display = 'none';
+      const section = document.getElementById('adminSectionUsers');
+      const existing = section.querySelector('.mobile-card-list');
+      if (existing) existing.remove();
+      const cardDiv = document.createElement('div');
+      cardDiv.className = 'mobile-card-list';
+      cardDiv.innerHTML = users.map(u => `
+        <div class="mobile-data-card">
+          <div class="mobile-data-card-header">
+            <div>
+              <div class="mobile-data-card-title">${u.nama || '-'}</div>
+              <div class="mobile-data-card-sub">${u.email || '-'}</div>
+            </div>
+            <span class="badge ${u.role === 'admin' ? 'badge-purple' : 'badge-blue'}">${u.role}</span>
+          </div>
+          <div class="mobile-data-card-body">
+            <div class="mobile-data-row"><span>Client</span><span>${u.clients?.nama_bisnes || '-'}</span></div>
+            <div class="mobile-data-row"><span>Last Login</span><span>${u.last_login ? formatDate(u.last_login) : 'Belum pernah'}</span></div>
+          </div>
+          <div class="mobile-data-card-actions">
+            <button onclick="deleteUser('${u.id}', '${u.email}')" class="btn-delete">Padam Akaun</button>
+          </div>
+        </div>
+      `).join('');
+      section.appendChild(cardDiv);
+    } else {
+      const wrapper = document.querySelector('#adminSectionUsers .table-wrapper');
+      if (wrapper) wrapper.style.display = '';
+      const existing = document.querySelector('#adminSectionUsers .mobile-card-list');
+      if (existing) existing.remove();
+      tbody.innerHTML = users.map(u => `
+        <tr>
+          <td>${u.nama || '-'}</td>
+          <td>${u.email || '-'}</td>
+          <td><span class="badge ${u.role === 'admin' ? 'badge-purple' : 'badge-blue'}">${u.role}</span></td>
+          <td>${u.clients?.nama_bisnes || '-'}</td>
+          <td>${u.last_login ? formatDate(u.last_login) : 'Belum pernah'}</td>
+          <td><button onclick="deleteUser('${u.id}', '${u.email}')" class="btn-delete">Padam</button></td>
+        </tr>
+      `).join('');
+    }
   } catch (err) {
     showToast('Gagal load users: ' + err.message, 'error');
   } finally {
@@ -552,25 +680,61 @@ async function loadActivityLog() {
       return;
     }
 
-    tbody.innerHTML = logs.map(l => {
-      const masaStr = new Date(l.created_at).toLocaleString('ms-MY', { timeZone: TZ });
-      const badgeMap = {
-        'ADD_SALE': 'badge-green', 'ADD_MARKETING': 'badge-green',
-        'EDIT_SALE': 'badge-yellow', 'EDIT_MARKETING': 'badge-yellow',
-        'DELETE_SALE': 'badge-red', 'DELETE_MARKETING': 'badge-red',
-        'TOPUP_BAJET': 'badge-blue', 'LOGIN': 'badge-gold'
-      };
-      const badgeClass = badgeMap[l.action_type] || 'badge-blue';
-      return `
-        <tr>
-          <td style="font-size:12px;white-space:nowrap;">${masaStr}</td>
-          <td>${profileMap[l.user_id] || '-'}</td>
-          <td>${clientMap[l.client_id] || '-'}</td>
-          <td><span class="badge ${badgeClass}" style="font-size:10px;">${l.action_type}</span></td>
-          <td style="font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;">${l.description || '-'}</td>
-        </tr>
-      `;
-    }).join('');
+    const badgeMap = {
+      'ADD_SALE': 'badge-green', 'ADD_MARKETING': 'badge-green',
+      'EDIT_SALE': 'badge-yellow', 'EDIT_MARKETING': 'badge-yellow',
+      'DELETE_SALE': 'badge-red', 'DELETE_MARKETING': 'badge-red',
+      'TOPUP_BAJET': 'badge-blue', 'LOGIN': 'badge-gold'
+    };
+
+    const isMobileL = window.innerWidth < 769;
+    if (isMobileL) {
+      const wrapper = document.querySelector('#adminSectionLog .table-wrapper');
+      if (wrapper) wrapper.style.display = 'none';
+      const section = document.getElementById('adminSectionLog');
+      const existing = section.querySelector('.mobile-card-list');
+      if (existing) existing.remove();
+      const cardDiv = document.createElement('div');
+      cardDiv.className = 'mobile-card-list';
+      cardDiv.innerHTML = logs.map(l => {
+        const masaStr = new Date(l.created_at).toLocaleString('ms-MY', { timeZone: TZ });
+        const badgeClass = badgeMap[l.action_type] || 'badge-blue';
+        return `
+          <div class="mobile-data-card">
+            <div class="mobile-data-card-header">
+              <div>
+                <div class="mobile-data-card-title">${profileMap[l.user_id] || '-'}</div>
+                <div class="mobile-data-card-sub">${masaStr}</div>
+              </div>
+              <span class="badge ${badgeClass}" style="font-size:10px;">${l.action_type?.replace('_', ' ')}</span>
+            </div>
+            <div class="mobile-data-card-body">
+              <div class="mobile-data-row"><span>Client</span><span>${clientMap[l.client_id] || '-'}</span></div>
+              <div class="mobile-data-row"><span>Detail</span><span style="text-align:right;max-width:180px;overflow:hidden;text-overflow:ellipsis;">${l.description || '-'}</span></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      section.appendChild(cardDiv);
+    } else {
+      const wrapper = document.querySelector('#adminSectionLog .table-wrapper');
+      if (wrapper) wrapper.style.display = '';
+      const existing = document.querySelector('#adminSectionLog .mobile-card-list');
+      if (existing) existing.remove();
+      tbody.innerHTML = logs.map(l => {
+        const masaStr = new Date(l.created_at).toLocaleString('ms-MY', { timeZone: TZ });
+        const badgeClass = badgeMap[l.action_type] || 'badge-blue';
+        return `
+          <tr>
+            <td style="font-size:12px;white-space:nowrap;">${masaStr}</td>
+            <td>${profileMap[l.user_id] || '-'}</td>
+            <td>${clientMap[l.client_id] || '-'}</td>
+            <td><span class="badge ${badgeClass}" style="font-size:10px;">${l.action_type}</span></td>
+            <td style="font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;">${l.description || '-'}</td>
+          </tr>
+        `;
+      }).join('');
+    }
   } catch (err) {
     showToast('Gagal load log: ' + err.message, 'error');
   } finally {

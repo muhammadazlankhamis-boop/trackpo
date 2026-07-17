@@ -17,8 +17,13 @@
 
   <!-- SIDEBAR -->
   <aside class="sidebar">
-    <div class="sidebar-logo">TRACKPO</div>
-    <p class="sidebar-sub">Admin Panel</p>
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark">T</div>
+      <div class="sidebar-brand">
+        <div class="sidebar-brand-name">TRACKPO</div>
+        <div class="sidebar-brand-sub">Admin Panel</div>
+      </div>
+    </div>
     <ul class="sidebar-nav">
       <li><a href="#" class="active" onclick="showAdminSection('dashboard')">
         <span class="nav-icon">🏠</span> Dashboard
@@ -38,7 +43,7 @@
     </ul>
     <div class="sidebar-user">
       <div class="user-avatar" id="adminAvatar">A</div>
-      <div>
+      <div class="user-info">
         <div class="user-name" id="adminName">Admin</div>
         <div class="user-role">Administrator</div>
       </div>
@@ -50,31 +55,36 @@
 
     <!-- ==================== SECTION: DASHBOARD ==================== -->
     <section id="adminSectionDashboard">
-      <div class="top-bar">
-        <div class="client-name-header">Semua Client</div>
-        <div class="top-bar-right">
-          <button class="btn btn-primary" onclick="openAddClientModal()" style="font-size:13px;">
+      <div class="top-header">
+        <div class="top-header-left">
+          <div class="greeting-text" id="adminGreeting">Selamat datang 👋</div>
+          <div class="greeting-sub">Admin Panel — TRACKPO</div>
+        </div>
+        <div class="top-header-right">
+          <button class="btn btn-primary" onclick="openAddClientModal()" style="font-size:13px;padding:9px 18px;">
             + Tambah Client
           </button>
-          <button class="btn btn-secondary" onclick="logout()" style="font-size:13px;padding:8px 14px;">
-            Log Keluar
-          </button>
+          <button class="btn-logout" onclick="logout()">Log Keluar</button>
         </div>
       </div>
 
       <!-- Stats Bar -->
       <div class="admin-stats-bar">
-        <div class="admin-stat-card">
+        <div class="admin-stat-card stat-purple">
+          <div class="stat-icon">👥</div>
           <div class="admin-stat-value" id="statTotalClient">-</div>
           <div class="admin-stat-label">Client Aktif</div>
         </div>
-        <div class="admin-stat-card">
-          <div class="admin-stat-value" style="color:var(--negative);" id="statAlerts">-</div>
+        <div class="admin-stat-card stat-red">
+          <div class="stat-icon">⚠️</div>
+          <div class="admin-stat-value" id="statAlerts">-</div>
           <div class="admin-stat-label">Ada Alert</div>
         </div>
-        <div class="admin-stat-card">
-          <div class="admin-stat-value" style="color:var(--warning);" id="statStale">-</div>
+        <div class="admin-stat-card stat-orange clickable" onclick="openStaleModal()" title="Klik untuk tengok senarai">
+          <div class="stat-icon">🕐</div>
+          <div class="admin-stat-value" id="statStale">-</div>
           <div class="admin-stat-label">Data Tak Kemaskini</div>
+          <div class="stat-click-hint">Klik untuk lihat →</div>
         </div>
       </div>
 
@@ -145,7 +155,7 @@
     <section id="adminSectionLog" class="hidden">
       <div class="top-bar">
         <div class="client-name-header">Log Aktiviti</div>
-        <select id="logClientFilter" onchange="loadActivityLog()" style="padding:8px 12px;background:var(--bg-card);border:1px solid var(--border-color);border-radius:10px;color:var(--text-primary);font-family:inherit;">
+        <select id="logClientFilter" onchange="loadActivityLog()" style="padding:8px 14px;background:var(--bg-card);border:1px solid var(--border-strong);border-radius:10px;color:var(--text-primary);font-family:inherit;font-size:13px;outline:none;">
           <option value="">Semua Client</option>
         </select>
       </div>
@@ -176,7 +186,7 @@
         <div class="settings-title">Senarai Objektif</div>
         <div id="objektifList" style="margin-bottom:16px;"></div>
         <div style="display:flex;gap:8px;">
-          <input type="text" id="newObjektif" placeholder="Nama objektif baru" style="flex:1;padding:10px 14px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:10px;color:var(--text-primary);font-family:inherit;" />
+          <input type="text" id="newObjektif" placeholder="Nama objektif baru" style="flex:1;padding:10px 14px;background:var(--bg-input);border:1px solid var(--border-strong);border-radius:10px;color:var(--text-primary);font-family:inherit;outline:none;" />
           <button class="btn btn-primary" onclick="addObjektif()">Tambah</button>
         </div>
       </div>
@@ -399,6 +409,20 @@
       <input type="password" id="confirmPassword" placeholder="Taip semula password baru" />
     </div>
     <button class="btn btn-primary btn-full" onclick="changePassword()">Simpan Password</button>
+  </div>
+</div>
+
+<!-- MODAL: STALE CLIENTS -->
+<div class="modal-overlay" id="modalStaleClients">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-title">🕐 Data Tak Kemaskini</span>
+      <button class="modal-close" onclick="document.getElementById('modalStaleClients').classList.remove('open')">×</button>
+    </div>
+    <div id="staleClientsList" style="padding:0 20px 20px;">
+      <div class="empty-state"><div class="empty-state-text">Memuatkan...</div></div>
+    </div>
   </div>
 </div>
 

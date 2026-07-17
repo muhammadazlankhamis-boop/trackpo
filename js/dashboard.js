@@ -703,8 +703,8 @@ function renderRekodSale() {
         <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;" title="${sebab}">${sebab || '-'}</td>
         <td style="max-width:100px;overflow:hidden;text-overflow:ellipsis;" title="${d.nota || ''}">${d.nota || '-'}</td>
         <td>
-          <button onclick="editSale('${d.id}')" style="background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.4);color:#C9A84C;padding:5px 12px;border-radius:8px;cursor:pointer;font-size:12px;margin-right:4px;font-weight:600;">Edit</button>
-          <button onclick="deleteSale('${d.id}')" style="background:rgba(248,81,73,0.15);border:1px solid rgba(248,81,73,0.4);color:#F85149;padding:5px 12px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;">Padam</button>
+          <button onclick="editSale('${d.id}')" class="btn-edit">Edit</button>
+          <button onclick="deleteSale('${d.id}')" class="btn-delete">Padam</button>
         </td>
       </tr>
     `;
@@ -738,8 +738,8 @@ function renderRekodMarketing() {
         <td>${d.nota || '-'}</td>
         <td>
           ${showActions ? `
-            <button onclick="editMarketing('${d.id}')" style="background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.4);color:#C9A84C;padding:5px 12px;border-radius:8px;cursor:pointer;font-size:12px;margin-right:4px;font-weight:600;">Edit</button>
-            <button onclick="deleteMarketing('${d.id}')" style="background:rgba(248,81,73,0.15);border:1px solid rgba(248,81,73,0.4);color:#F85149;padding:5px 12px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;">Padam</button>
+            <button onclick="editMarketing('${d.id}')" class="btn-edit">Edit</button>
+            <button onclick="deleteMarketing('${d.id}')" class="btn-delete">Padam</button>
           ` : '-'}
         </td>
       </tr>
