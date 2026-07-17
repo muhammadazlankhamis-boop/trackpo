@@ -131,8 +131,8 @@ async function loadClientExtraData(clientIds) {
   try {
     const [topupsRes, marketingRes, saleRes] = await Promise.all([
       sbClient.from('bajet').select('client_id, jumlah').in('client_id', clientIds),
-      sbClient.from('data_marketing').select('client_id, spend_sst').in('client_id', clientIds),
-      sbClient.from('data_sale').select('client_id, created_at').in('client_id', clientIds).order('created_at', { ascending: false })
+      sbClient.from('data_marketing').select('client_id, tarikh_mula, spend_sst, created_at').in('client_id', clientIds).order('tarikh_mula', { ascending: false }),
+      sbClient.from('data_sale').select('client_id, tarikh, created_at').in('client_id', clientIds).order('tarikh', { ascending: false })
     ]);
 
     const topupMap = {};
@@ -145,9 +145,26 @@ async function loadClientExtraData(clientIds) {
       spendMap[m.client_id] = (spendMap[m.client_id] || 0) + (m.spend_sst || 0);
     });
 
-    const lastUpdateMap = {};
+    // lastUpdateMap = most recent of BOTH sale tarikh AND marketing tarikh_mula
+    const _sSaleMap = {};
     (saleRes.data || []).forEach(d => {
-      if (!lastUpdateMap[d.client_id]) lastUpdateMap[d.client_id] = d.created_at;
+      const t = d.tarikh || d.created_at;
+      if (!_sSaleMap[d.client_id] || t > _sSaleMap[d.client_id]) _sSaleMap[d.client_id] = t;
+    });
+
+    const _sMktMap = {};
+    (marketingRes.data || []).forEach(d => {
+      const t = d.tarikh_mula || d.created_at;
+      if (!_sMktMap[d.client_id] || t > _sMktMap[d.client_id]) _sMktMap[d.client_id] = t;
+    });
+
+    // Take most recent from either
+    const lastUpdateMap = {};
+    allClients.forEach(client => {
+      const s = _sSaleMap[client.id];
+      const m = _sMktMap[client.id];
+      if (s && m) lastUpdateMap[client.id] = s > m ? s : m;
+      else lastUpdateMap[client.id] = s || m || null;
     });
 
     // Store globally for stale modal
