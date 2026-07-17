@@ -254,48 +254,97 @@ function renderClientCards(clients, topupMap, spendMap, lastUpdateMap) {
 }
 
 
-function openStaleModal() {
+async function openStaleModal() {
   const modal = document.getElementById('modalStaleClients');
   const listEl = document.getElementById('staleClientsList');
   if (!modal || !listEl) return;
 
-  // Build list from allClients + lastUpdateMap
-  const staleClients = [];
-  allClients.forEach(client => {
-    // We need lastUpdateMap - store it globally
-    const lastUpdate = window._lastUpdateMap?.[client.id];
-    const daysSinceUpdate = lastUpdate ? daysSince(lastUpdate) : null;
-    if (daysSinceUpdate === null || daysSinceUpdate > 2) {
-      staleClients.push({
-        nama: client.nama_bisnes,
-        lastUpdate,
-        days: daysSinceUpdate
-      });
-    }
-  });
+  modal.classList.add('open');
+  listEl.innerHTML = '<div class="empty-state"><div class="empty-state-text">Memuatkan...</div></div>';
 
-  if (staleClients.length === 0) {
-    listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">✅</div><div class="empty-state-text">Semua client dah update data terkini!</div></div>';
-  } else {
-    listEl.innerHTML = staleClients.map(c => {
-      const updateText = c.days === null ? 'Belum pernah ada data' :
-        c.days === 0 ? 'Hari ini' :
-        c.days === 1 ? 'Semalam' :
-        `${c.days} hari lepas`;
-      const isVeryStale = c.days === null || c.days > 7;
+  try {
+    const clientIds = allClients.map(c => c.id);
+    if (clientIds.length === 0) {
+      listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">👥</div><div class="empty-state-text">Tiada client lagi</div></div>';
+      return;
+    }
+
+    // Fetch last sale and marketing update per client
+    const [saleRes, mktRes] = await Promise.all([
+      sbClient.from('data_sale').select('client_id, tarikh, created_at').in('client_id', clientIds).order('tarikh', { ascending: false }),
+      sbClient.from('data_marketing').select('client_id, tarikh_mula, created_at').in('client_id', clientIds).order('tarikh_mula', { ascending: false })
+    ]);
+
+    // Build last update maps
+    const lastSaleMap = {};
+    (saleRes.data || []).forEach(d => {
+      if (!lastSaleMap[d.client_id]) lastSaleMap[d.client_id] = d.tarikh || d.created_at;
+    });
+
+    const lastMktMap = {};
+    (mktRes.data || []).forEach(d => {
+      if (!lastMktMap[d.client_id]) lastMktMap[d.client_id] = d.tarikh_mula || d.created_at;
+    });
+
+    // Find stale clients (no data or >2 days)
+    const staleClients = allClients.filter(client => {
+      const saleDate = lastSaleMap[client.id];
+      const mktDate = lastMktMap[client.id];
+      const lastAny = saleDate && mktDate
+        ? (saleDate > mktDate ? saleDate : mktDate)
+        : (saleDate || mktDate);
+      const days = lastAny ? daysSince(lastAny) : null;
+      return days === null || days > 2;
+    });
+
+    if (staleClients.length === 0) {
+      listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">✅</div><div class="empty-state-text">Semua client dah update data terkini!</div></div>';
+      return;
+    }
+
+    listEl.innerHTML = staleClients.map(client => {
+      const lastSale = lastSaleMap[client.id];
+      const lastMkt = lastMktMap[client.id];
+      const saleDays = lastSale ? daysSince(lastSale) : null;
+      const mktDays = lastMkt ? daysSince(lastMkt) : null;
+
+      const saleText = lastSale
+        ? `${formatDate(lastSale)} (${saleDays === 0 ? 'hari ini' : saleDays === 1 ? 'semalam' : saleDays + ' hari lepas'})`
+        : 'Tiada rekod';
+
+      const mktText = lastMkt
+        ? `${formatDate(lastMkt)} (${mktDays === 0 ? 'hari ini' : mktDays === 1 ? 'semalam' : mktDays + ' hari lepas'})`
+        : 'Tiada rekod';
+
+      const lastAnyDays = Math.max(
+        saleDays !== null ? saleDays : 999,
+        mktDays !== null ? mktDays : 999
+      );
+      const isVeryStale = lastAnyDays > 7 || lastAnyDays === 999;
+
       return `
-        <div class="topup-item" style="padding:14px 0;">
-          <div>
-            <div style="font-weight:700;font-size:14px;margin-bottom:3px;">${c.nama}</div>
-            <div style="font-size:12px;color:var(--text-secondary);">Last update: ${c.lastUpdate ? formatDate(c.lastUpdate) : 'Tiada rekod'}</div>
+        <div style="padding:16px 0;border-bottom:1px solid var(--border);">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+            <div style="font-weight:700;font-size:15px;">${client.nama_bisnes}</div>
+            <span class="badge ${isVeryStale ? 'badge-red' : 'badge-yellow'}">${isVeryStale ? 'Kritikal' : 'Perlu update'}</span>
           </div>
-          <span class="badge ${isVeryStale ? 'badge-red' : 'badge-yellow'}">${updateText}</span>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;justify-content:space-between;font-size:12px;">
+              <span style="color:var(--text-secondary);font-weight:600;">💰 Data Sale</span>
+              <span style="color:${lastSale ? 'var(--text-primary)' : 'var(--red)'};">${saleText}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;">
+              <span style="color:var(--text-secondary);font-weight:600;">📣 Data Marketing</span>
+              <span style="color:${lastMkt ? 'var(--text-primary)' : 'var(--red)'};">${mktText}</span>
+            </div>
+          </div>
         </div>
       `;
     }).join('');
-  }
 
-  modal.classList.add('open');
+  } catch (err) {
+    listEl.innerHTML = `<div class="empty-state"><div class="empty-state-text">Gagal memuatkan: ${err.message}</div></div>`;
+  }
 }
 
 function openClientDashboard(clientId) {

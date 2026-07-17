@@ -381,20 +381,22 @@ async function updateBalanceKPI() {
   if (bajetData.length === 0) {
     histEl.innerHTML = '<div style="font-size:12px;color:var(--text-secondary);font-weight:600;margin-bottom:8px;">Rekod Topup</div><div style="color:var(--text-secondary);font-size:13px;">Tiada rekod topup</div>';
   } else {
-    histEl.innerHTML = '<div style="font-size:12px;color:var(--text-secondary);font-weight:600;margin-bottom:8px;">Rekod Topup</div>' +
+    histEl.innerHTML = '<div style="font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:14px;">Rekod Topup</div>' +
       bajetData.map(t => `
-        <div class="topup-item">
-          <div>
-            <div class="topup-amount">+ ${formatRM(t.jumlah)}</div>
-            <div class="topup-date">${t.nota || '-'}</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;">
+        <div style="display:flex;flex-direction:column;padding:14px 0;border-bottom:1px solid var(--border);">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:${isAdmin ? '12px' : '0'};">
+            <div>
+              <div class="topup-amount">+ ${formatRM(t.jumlah)}</div>
+              <div class="topup-date" style="margin-top:3px;">${t.nota || '-'}</div>
+            </div>
             <div class="topup-date">${formatDate(t.tarikh || t.created_at)}</div>
-            ${isAdmin ? `
-              <button class="action-btn" onclick="editTopup('${t.id}')" title="Edit">✏️</button>
-              <button class="action-btn delete" onclick="deleteTopup('${t.id}')" title="Padam">🗑️</button>
-            ` : ''}
           </div>
+          ${isAdmin ? `
+            <div style="display:flex;gap:8px;">
+              <button class="btn-edit" onclick="editTopup('${t.id}')" style="flex:1;padding:8px;min-height:38px;">Edit</button>
+              <button class="btn-delete" onclick="deleteTopup('${t.id}')" style="flex:1;padding:8px;min-height:38px;">Padam</button>
+            </div>
+          ` : ''}
         </div>
       `).join('');
   }
@@ -784,44 +786,54 @@ function closeFAB() {
   document.getElementById('fabMain')?.classList.remove('open');
 }
 
-// Mobile FAB — buka sheet pilihan
+// Mobile FAB — floating centered modal (sama style dengan modal lain)
 function openFabMenu() {
   const isAdmin = currentProfile?.role === 'admin';
   const options = [
-    { label: '💰 Tambah Data Sale', fn: 'openSaleModal()' },
-    ...(isAdmin ? [{ label: '📣 Tambah Data Marketing', fn: 'openMarketingModal()' }] : []),
-    ...(isAdmin ? [{ label: '💳 Topup Bajet', fn: 'openTopupModal()' }] : []),
+    { label: '💰 Tambah Data Sale', sub: 'Rekod jualan harian', fn: 'openSaleModal()' },
+    ...(isAdmin ? [{ label: '📣 Tambah Data Marketing', sub: 'Rekod data iklan', fn: 'openMarketingModal()' }] : []),
+    ...(isAdmin ? [{ label: '💳 Topup Bajet Iklan', sub: 'Tambah bajet baru', fn: 'openTopupModal()' }] : []),
   ];
 
-  // Simple — tunjuk sebagai action sheet
-  const sheet = document.createElement('div');
-  sheet.style.cssText = 'position:fixed;inset:0;z-index:2000;';
+  // Remove existing if any
+  const existing = document.getElementById('fabActionModal');
+  if (existing) document.body.removeChild(existing);
 
   const overlay = document.createElement('div');
-  overlay.style.cssText = 'position:absolute;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);';
-  overlay.onclick = () => document.body.removeChild(sheet);
+  overlay.id = 'fabActionModal';
+  overlay.className = 'modal-overlay open';
+  overlay.onclick = (e) => { if (e.target === overlay) document.body.removeChild(overlay); };
 
-  const menu = document.createElement('div');
-  menu.style.cssText = `position:absolute;bottom:0;left:0;right:0;background:var(--bg-card);border-radius:20px 20px 0 0;padding:16px;border:1px solid var(--border-strong);border-bottom:none;padding-bottom:calc(16px + env(safe-area-inset-bottom));`;
+  const sheet = document.createElement('div');
+  sheet.className = 'modal-sheet';
+  sheet.style.maxWidth = '420px';
+  sheet.onclick = (e) => e.stopPropagation();
 
-  const handle = document.createElement('div');
-  handle.style.cssText = 'width:36px;height:4px;background:var(--border-strong);border-radius:99px;margin:0 auto 20px;';
-  menu.appendChild(handle);
+  sheet.innerHTML = `
+    <div class="modal-header">
+      <span class="modal-title">Tambah Data</span>
+      <button class="modal-close" onclick="document.body.removeChild(document.getElementById('fabActionModal'))">×</button>
+    </div>
+    <div style="padding:0 24px 32px;display:flex;flex-direction:column;gap:10px;">
+      ${options.map(opt => `
+        <button
+          onclick="document.body.removeChild(document.getElementById('fabActionModal')); ${opt.fn}"
+          style="width:100%;padding:16px 18px;border:1px solid var(--border-strong);background:var(--bg);border-radius:14px;color:var(--text-primary);font-family:inherit;cursor:pointer;text-align:left;transition:all 0.15s;display:flex;align-items:center;gap:14px;"
+          onmouseover="this.style.borderColor='var(--primary)';this.style.background='var(--primary-light)'"
+          onmouseout="this.style.borderColor='var(--border-strong)';this.style.background='var(--bg)'"
+        >
+          <div style="font-size:24px;flex-shrink:0;">${opt.label.split(' ')[0]}</div>
+          <div>
+            <div style="font-size:15px;font-weight:700;margin-bottom:2px;">${opt.label.substring(opt.label.indexOf(' ')+1)}</div>
+            <div style="font-size:12px;color:var(--text-secondary);">${opt.sub}</div>
+          </div>
+        </button>
+      `).join('')}
+    </div>
+  `;
 
-  options.forEach(opt => {
-    const btn = document.createElement('button');
-    btn.style.cssText = `width:100%;padding:14px 16px;border:none;background:var(--bg-input);border-radius:12px;color:var(--text-primary);font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;margin-bottom:10px;text-align:left;transition:background 0.15s;`;
-    btn.textContent = opt.label;
-    btn.onclick = () => {
-      document.body.removeChild(sheet);
-      eval(opt.fn);
-    };
-    menu.appendChild(btn);
-  });
-
-  sheet.appendChild(overlay);
-  sheet.appendChild(menu);
-  document.body.appendChild(sheet);
+  overlay.appendChild(sheet);
+  document.body.appendChild(overlay);
 }
 
 // ===== SETTINGS =====

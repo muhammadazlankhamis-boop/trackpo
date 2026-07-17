@@ -61,6 +61,8 @@ function openMarketingModal(editId) {
   }
 
   closeFAB();
+  const fabModal = document.getElementById('fabActionModal');
+  if (fabModal) document.body.removeChild(fabModal);
   document.getElementById('modalMarketing').classList.add('open');
 }
 

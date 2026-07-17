@@ -19,6 +19,9 @@ function openTopupModal(editId = null) {
   }
 
   closeFAB();
+  // Close FAB action modal if open
+  const fabModal = document.getElementById('fabActionModal');
+  if (fabModal) document.body.removeChild(fabModal);
   document.getElementById('modalTopup').classList.add('open');
 }
 
