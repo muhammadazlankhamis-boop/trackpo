@@ -168,6 +168,8 @@ async function loadClientExtraData(clientIds) {
     });
 
     // Store globally for stale modal
+    window._lastSaleMap = _sSaleMap;
+    window._lastMktMap = _sMktMap;
     window._lastUpdateMap = lastUpdateMap;
 
     // Update stats
@@ -175,8 +177,16 @@ async function loadClientExtraData(clientIds) {
     let staleCount = 0;
 
     allClients.forEach(client => {
-      const daysSinceUpdate = lastUpdateMap[client.id] ? daysSince(lastUpdateMap[client.id]) : null;
-      if (daysSinceUpdate === null || daysSinceUpdate > 2) staleCount++;
+      // Client stale jika MANA-MANA SATU (sale ATAU marketing) >2 hari atau tiada data
+      const lastSaleDate = _sSaleMap[client.id];
+      const lastMktDate = _sMktMap[client.id];
+      const saleDays = lastSaleDate ? daysSince(lastSaleDate) : null;
+      const mktDays = lastMktDate ? daysSince(lastMktDate) : null;
+
+      const saleStale = (saleDays === null || saleDays > 2);
+      const mktStale = (mktDays === null || mktDays > 2);
+
+      if (saleStale || mktStale) staleCount++;
 
       const balance = (topupMap[client.id] || 0) - (spendMap[client.id] || 0);
       const tetapan = client.tetapan_client?.[0] || {};
@@ -286,32 +296,28 @@ async function openStaleModal() {
       return;
     }
 
-    // Fetch last sale and marketing update per client
+    // Fetch last sale tarikh and marketing tarikh_mula per client
     const [saleRes, mktRes] = await Promise.all([
-      sbClient.from('data_sale').select('client_id, tarikh, created_at').in('client_id', clientIds).order('tarikh', { ascending: false }),
-      sbClient.from('data_marketing').select('client_id, tarikh_mula, created_at').in('client_id', clientIds).order('tarikh_mula', { ascending: false })
+      sbClient.from('data_sale').select('client_id, tarikh').in('client_id', clientIds).order('tarikh', { ascending: false }),
+      sbClient.from('data_marketing').select('client_id, tarikh_mula').in('client_id', clientIds).order('tarikh_mula', { ascending: false })
     ]);
 
-    // Build last update maps
+    // Build last tarikh maps (most recent tarikh per client)
     const lastSaleMap = {};
     (saleRes.data || []).forEach(d => {
-      if (!lastSaleMap[d.client_id]) lastSaleMap[d.client_id] = d.tarikh || d.created_at;
+      if (!lastSaleMap[d.client_id]) lastSaleMap[d.client_id] = d.tarikh;
     });
 
     const lastMktMap = {};
     (mktRes.data || []).forEach(d => {
-      if (!lastMktMap[d.client_id]) lastMktMap[d.client_id] = d.tarikh_mula || d.created_at;
+      if (!lastMktMap[d.client_id]) lastMktMap[d.client_id] = d.tarikh_mula;
     });
 
-    // Find stale clients (no data or >2 days)
+    // Client stale jika MANA-MANA SATU >2 hari atau tiada data
     const staleClients = allClients.filter(client => {
-      const saleDate = lastSaleMap[client.id];
-      const mktDate = lastMktMap[client.id];
-      const lastAny = saleDate && mktDate
-        ? (saleDate > mktDate ? saleDate : mktDate)
-        : (saleDate || mktDate);
-      const days = lastAny ? daysSince(lastAny) : null;
-      return days === null || days > 2;
+      const saleDays = lastSaleMap[client.id] ? daysSince(lastSaleMap[client.id]) : null;
+      const mktDays = lastMktMap[client.id] ? daysSince(lastMktMap[client.id]) : null;
+      return (saleDays === null || saleDays > 2) || (mktDays === null || mktDays > 2);
     });
 
     if (staleClients.length === 0) {
@@ -325,34 +331,52 @@ async function openStaleModal() {
       const saleDays = lastSale ? daysSince(lastSale) : null;
       const mktDays = lastMkt ? daysSince(lastMkt) : null;
 
-      const saleText = lastSale
-        ? `${formatDate(lastSale)} (${saleDays === 0 ? 'hari ini' : saleDays === 1 ? 'semalam' : saleDays + ' hari lepas'})`
+      // Stale = >2 hari atau tiada data
+      const saleStale = (saleDays === null || saleDays > 2);
+      const mktStale = (mktDays === null || mktDays > 2);
+
+      function dayLabel(days) {
+        if (days === null) return 'Tiada rekod';
+        if (days === 0) return 'hari ini';
+        if (days === 1) return 'semalam';
+        return `${days} hari lepas`;
+      }
+
+      const saleDisplay = lastSale
+        ? `${formatDate(lastSale)} · ${dayLabel(saleDays)}`
         : 'Tiada rekod';
 
-      const mktText = lastMkt
-        ? `${formatDate(lastMkt)} (${mktDays === 0 ? 'hari ini' : mktDays === 1 ? 'semalam' : mktDays + ' hari lepas'})`
+      const mktDisplay = lastMkt
+        ? `${formatDate(lastMkt)} · ${dayLabel(mktDays)}`
         : 'Tiada rekod';
 
-      const lastAnyDays = Math.max(
-        saleDays !== null ? saleDays : 999,
-        mktDays !== null ? mktDays : 999
-      );
-      const isVeryStale = lastAnyDays > 7 || lastAnyDays === 999;
+      // Badge — kritikal jika >7 hari atau tiada data langsung
+      const maxDays = Math.max(saleDays ?? 999, mktDays ?? 999);
+      const badgeClass = maxDays > 7 ? 'badge-red' : 'badge-yellow';
+      const badgeLabel = maxDays > 7 ? 'Kritikal' : 'Perlu Update';
 
       return `
         <div style="padding:16px 0;border-bottom:1px solid var(--border);">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
             <div style="font-weight:700;font-size:15px;">${client.nama_bisnes}</div>
-            <span class="badge ${isVeryStale ? 'badge-red' : 'badge-yellow'}">${isVeryStale ? 'Kritikal' : 'Perlu update'}</span>
+            <span class="badge ${badgeClass}">${badgeLabel}</span>
           </div>
-          <div style="display:flex;flex-direction:column;gap:6px;">
-            <div style="display:flex;justify-content:space-between;font-size:12px;">
-              <span style="color:var(--text-secondary);font-weight:600;">💰 Data Sale</span>
-              <span style="color:${lastSale ? 'var(--text-primary)' : 'var(--red)'};">${saleText}</span>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;">
+              <span style="color:var(--text-secondary);font-weight:600;display:flex;align-items:center;gap:6px;">
+                💰 Data Sale
+              </span>
+              <span style="font-weight:500;color:${saleStale ? 'var(--red)' : 'var(--green)'};">
+                ${saleDisplay}
+              </span>
             </div>
-            <div style="display:flex;justify-content:space-between;font-size:12px;">
-              <span style="color:var(--text-secondary);font-weight:600;">📣 Data Marketing</span>
-              <span style="color:${lastMkt ? 'var(--text-primary)' : 'var(--red)'};">${mktText}</span>
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;">
+              <span style="color:var(--text-secondary);font-weight:600;display:flex;align-items:center;gap:6px;">
+                📣 Data Marketing
+              </span>
+              <span style="font-weight:500;color:${mktStale ? 'var(--red)' : 'var(--green)'};">
+                ${mktDisplay}
+              </span>
             </div>
           </div>
         </div>
