@@ -183,8 +183,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const SUPABASE_URL = 'https://dhyddyhbpmzstbhrsgrq.supabase.co';
-    const SUPABASE_KEY = 'eyJeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRoeWRkeWhicG16c3RiaHJzZ3JxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5MDg5MDMsImV4cCI6MjA5OTQ4NDkwM30.czIG6b_zWhZlFj3MNfFVv6Yb65cL5DD_7yLmV37rFCMhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRoeWRkeWhicG16c3RiaHJzZ3JxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzYzMzI2NDQsImV4cCI6MjA1MTkwODY0NH0.placeholder';
-    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRoeWRkeWhicG16c3RiaHJzZ3JxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5MDg5MDMsImV4cCI6MjA5OTQ4NDkwM30.czIG6b_zWhZlFj3MNfFVv6Yb65cL5DD_7yLmV37rFCM';      const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     async function handleLogin() {
       const input = document.getElementById('inputLogin').value.trim();
