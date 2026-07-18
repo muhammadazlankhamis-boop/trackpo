@@ -61,10 +61,14 @@
           <div class="greeting-sub">Admin Panel — TRACKPO</div>
         </div>
         <div class="top-header-right">
-          <button class="btn btn-primary" onclick="openAddClientModal()" style="font-size:13px;padding:9px 18px;">
+          <!-- Desktop buttons -->
+          <button class="btn btn-primary admin-btn-desktop" onclick="openAddClientModal()" style="font-size:13px;padding:9px 18px;">
             + Tambah Client
           </button>
-          <button class="btn-logout" onclick="logout()">Log Keluar</button>
+          <button class="btn-logout admin-btn-desktop" onclick="logout()">Log Keluar</button>
+          <!-- Mobile icon buttons -->
+          <button class="admin-icon-btn admin-btn-mobile" onclick="openAddClientModal()" title="Tambah Client">＋</button>
+          <button class="admin-icon-btn admin-btn-mobile admin-icon-btn-danger" onclick="logout()" title="Log Keluar">⏻</button>
         </div>
       </div>
 
