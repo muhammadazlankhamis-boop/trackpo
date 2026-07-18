@@ -53,6 +53,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (nameEl) nameEl.textContent = profile.nama || 'Admin';
     if (avatarEl) avatarEl.textContent = (profile.nama || 'A')[0].toUpperCase();
 
+    // Update greeting sub in header
+    const hour = new Date().getHours();
+    const greetWord = hour < 12 ? 'Selamat Pagi' : hour < 15 ? 'Selamat Tengah Hari' : hour < 19 ? 'Selamat Petang' : 'Selamat Malam';
+    const greetEmoji = hour < 12 ? '🌤️' : hour < 15 ? '☀️' : hour < 19 ? '🌤️' : '🌙';
+    const greetSubEl = document.querySelector('.greeting-sub');
+    if (greetSubEl) greetSubEl.textContent = `${greetWord}, ${profile.nama || 'Admin'} ${greetEmoji}`;
+
     const savedTheme = localStorage.getItem('trackpo_theme') || 'light';
     const toggle = document.getElementById('adminThemeToggle');
     if (toggle) toggle.checked = savedTheme === 'dark';

@@ -62,15 +62,18 @@
     <!-- TOP HEADER -->
     <div class="top-header">
       <div class="top-header-left">
-        <div class="greeting-text" id="greetingText">Selamat datang 👋</div>
-        <div class="greeting-sub" id="clientNameHeader">Aipromarketing</div>
+        <div class="client-name-big" id="clientNameHeader">-</div>
+        <div class="greeting-sub" id="greetingText">Selamat datang 👋</div>
       </div>
       <div class="top-header-right">
         <div class="icon-btn" id="notifBell" onclick="toggleNotif()">
           🔔
           <div class="notif-dot hidden" id="notifDot"></div>
         </div>
-        <button class="btn-logout" onclick="logout()">Log Keluar</button>
+        <!-- Desktop logout -->
+        <button class="btn-logout admin-btn-desktop" onclick="logout()">Log Keluar</button>
+        <!-- Mobile logout -->
+        <button class="admin-icon-btn admin-btn-mobile" onclick="logout()" title="Log Keluar">📲</button>
       </div>
     </div>
 

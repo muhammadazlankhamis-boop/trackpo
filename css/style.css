@@ -1539,3 +1539,19 @@ select:focus-visible {
   .admin-btn-desktop { display: none !important; }
   .admin-btn-mobile { display: flex; }
 }
+
+
+/* ===== CLIENT NAME BIG (header) ===== */
+.client-name-big {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+  line-height: 1.2;
+}
+
+@media (max-width: 768px) {
+  .client-name-big {
+    font-size: 17px;
+  }
+}

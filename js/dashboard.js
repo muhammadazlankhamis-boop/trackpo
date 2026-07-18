@@ -66,12 +66,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  // Set nama + greeting
-  document.getElementById('clientNameHeader').textContent = currentClient.nama_bisnes || '-';
+  // Set nama
+  const clientNameUpper = (currentClient.nama_bisnes || '-').toUpperCase();
+  document.getElementById('clientNameHeader').textContent = clientNameUpper;
   document.getElementById('sidebarName').textContent = currentProfile.nama || '-';
   document.getElementById('sidebarAvatar').textContent = (currentProfile.nama || 'U')[0].toUpperCase();
 
-  // Greeting berdasarkan waktu Malaysia
+  // Fix role label
+  const roleEl = document.getElementById('sidebarRole');
+  if (roleEl) roleEl.textContent = currentProfile.role === 'admin' ? 'Administrator' : 'Client';
+
+  // Greeting kecil bawah nama client
   const hour = nowMY().getHours();
   const greetWord = hour < 12 ? 'Selamat Pagi' : hour < 15 ? 'Selamat Tengah Hari' : hour < 19 ? 'Selamat Petang' : 'Selamat Malam';
   const greetEmoji = hour < 12 ? '🌤️' : hour < 15 ? '☀️' : hour < 19 ? '🌤️' : '🌙';
@@ -288,10 +293,8 @@ function updateKPICards() {
 
   // Lead
   document.getElementById('kpiLead').textContent = formatNumber(totalLeadAds);
-  document.getElementById('kpiLeadSub').innerHTML =
-    `<span style="color:var(--info)">Ads: ${formatNumber(totalLeadAds)}</span> | ` +
-    `<span>Masuk: ${formatNumber(totalLeadMasuk)}</span> | ` +
-    `<span style="color:var(--positive)">Close: ${formatNumber(totalLeadClose)}</span>`;
+  document.getElementById('kpiLeadSub').textContent =
+    `Ads ${formatNumber(totalLeadAds)} · Masuk ${formatNumber(totalLeadMasuk)} · Close ${formatNumber(totalLeadClose)}`;
   const leadGapEl = document.getElementById('kpiLeadGap');
   const gapAdsMasuk = totalLeadAds - totalLeadMasuk;
   if (gapAdsMasuk > 0) {
@@ -303,7 +306,7 @@ function updateKPICards() {
 
   // CPL
   document.getElementById('kpiCPL').textContent = formatRM(cplAds);
-  document.getElementById('kpiCPLSub').textContent = `Ads: ${formatRM(cplAds)} / Real: ${formatRM(cplReal)}`;
+  document.getElementById('kpiCPLSub').textContent = `Ads ${formatRM(cplAds)} · Real ${formatRM(cplReal)}`;
   const cplBadge = document.getElementById('kpiCPLBadge');
   if (tetapan.benchmark_cpl > 0) {
     const aboveTarget = cplReal > tetapan.benchmark_cpl;
