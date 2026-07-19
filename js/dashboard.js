@@ -216,43 +216,50 @@ function updatePeriodLabel() {
 }
 
 // ===== LAST UPDATE INFO =====
+// Tunjuk tarikh DATA (bukan tarikh dimasukkan)
+// Sale: tarikh terkini dari data_sale.tarikh
+// Marketing: tarikh_akhir terkini (ambik tarikh data, bukan masa entry)
 async function updateLastUpdateInfo() {
   const { data: lastSale } = await sbClient
     .from('data_sale')
-    .select('created_at')
+    .select('tarikh')
     .eq('client_id', currentClient.id)
-    .order('created_at', { ascending: false })
+    .order('tarikh', { ascending: false })
     .limit(1)
-    .single();
+    .maybeSingle();
 
   const { data: lastMarketing } = await sbClient
     .from('data_marketing')
-    .select('created_at')
+    .select('tarikh_mula, tarikh_akhir, is_bulk')
     .eq('client_id', currentClient.id)
-    .order('created_at', { ascending: false })
+    .order('tarikh_akhir', { ascending: false })
     .limit(1)
-    .single();
+    .maybeSingle();
 
-  const saleDays = lastSale ? daysSince(lastSale.created_at) : null;
-  const marketingDays = lastMarketing ? daysSince(lastMarketing.created_at) : null;
+  // Sale: guna tarikh data
+  const saleTarikh = lastSale?.tarikh || null;
+  const saleDays = saleTarikh ? daysSince(saleTarikh) : null;
 
-  const saleText = saleDays === null ? 'Tiada data' :
-    saleDays === 0 ? '<span class="fresh">Hari ini</span>' :
-    saleDays === 1 ? '<span class="fresh">Semalam</span>' :
-    saleDays <= 2 ? `<span class="fresh">${saleDays} hari lepas</span>` :
-    `<span class="stale">${saleDays} hari lepas</span>`;
+  // Marketing: kalau bulk → tarikh_akhir, kalau harian → tarikh_mula
+  const mktTarikh = lastMarketing
+    ? (lastMarketing.is_bulk ? lastMarketing.tarikh_akhir : lastMarketing.tarikh_mula)
+    : null;
+  const marketingDays = mktTarikh ? daysSince(mktTarikh) : null;
 
-  const marketingText = marketingDays === null ? 'Tiada data' :
-    marketingDays === 0 ? '<span class="fresh">Hari ini</span>' :
-    marketingDays === 1 ? '<span class="fresh">Semalam</span>' :
-    marketingDays <= 2 ? `<span class="fresh">${marketingDays} hari lepas</span>` :
-    `<span class="stale">${marketingDays} hari lepas</span>`;
+  function makeLabel(tarikh, days) {
+    if (tarikh === null) return 'Tiada data';
+    const dateStr = formatDate(tarikh);
+    if (days === 0) return `<span class="fresh">${dateStr} (hari ini)</span>`;
+    if (days === 1) return `<span class="fresh">${dateStr} (semalam)</span>`;
+    if (days <= 2) return `<span class="fresh">${dateStr}</span>`;
+    return `<span class="stale">${dateStr} (${days} hari lepas)</span>`;
+  }
 
   document.getElementById('lastUpdateInfo').innerHTML =
-    `Sale: ${saleText} · Marketing: ${marketingText}`;
+    `Sale: ${makeLabel(saleTarikh, saleDays)} · Marketing: ${makeLabel(mktTarikh, marketingDays)}`;
 
-  // Check notif dot
-  if (saleDays > 2 || marketingDays > 2) {
+  // Notif dot
+  if ((saleDays !== null && saleDays > 2) || (marketingDays !== null && marketingDays > 2)) {
     document.getElementById('notifDot').classList.remove('hidden');
   }
 }
@@ -377,32 +384,58 @@ async function updateBalanceKPI() {
     prog.className = `progress-fill ${usedPct >= 90 ? 'fill-red' : usedPct >= 70 ? 'fill-yellow' : 'fill-green'}`;
   }
 
-  // History 5 topup
+  // Rekod Topup — default 3, expand on click
   const histEl = document.getElementById('topupHistory');
   const isAdmin = currentProfile?.role === 'admin';
 
   if (bajetData.length === 0) {
-    histEl.innerHTML = '<div style="font-size:12px;color:var(--text-secondary);font-weight:600;margin-bottom:8px;">Rekod Topup</div><div style="color:var(--text-secondary);font-size:13px;">Tiada rekod topup</div>';
-  } else {
-    histEl.innerHTML = '<div style="font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:14px;">Rekod Topup</div>' +
-      bajetData.map(t => `
-        <div style="display:flex;flex-direction:column;padding:14px 0;border-bottom:1px solid var(--border);">
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:${isAdmin ? '12px' : '0'};">
-            <div>
-              <div class="topup-amount">+ ${formatRM(t.jumlah)}</div>
-              <div class="topup-date" style="margin-top:3px;">${t.nota || '-'}</div>
-            </div>
-            <div class="topup-date">${formatDate(t.tarikh || t.created_at)}</div>
-          </div>
+    histEl.innerHTML = '<div style="font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:14px;">Rekod Topup</div><div style="color:var(--text-secondary);font-size:13px;">Tiada rekod topup</div>';
+    return;
+  }
+
+  renderTopupList(false);
+}
+
+function renderTopupList(showAll) {
+  const histEl = document.getElementById('topupHistory');
+  const isAdmin = currentProfile?.role === 'admin';
+  const DEFAULT_SHOW = 3;
+  const data = showAll ? bajetData : bajetData.slice(0, DEFAULT_SHOW);
+  const hasMore = bajetData.length > DEFAULT_SHOW;
+
+  const renderItem = t => `
+    <div style="display:flex;flex-direction:column;padding:12px 0;border-bottom:1px solid var(--border);">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;${isAdmin ? 'margin-bottom:10px;' : ''}">
+        <div>
+          <div class="topup-amount">+ ${formatRM(t.jumlah)}</div>
+          <div class="topup-date" style="margin-top:2px;">${t.nota || '-'}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="topup-date">${formatDate(t.tarikh || t.created_at)}</div>
           ${isAdmin ? `
-            <div style="display:flex;gap:8px;">
-              <button class="btn-edit" onclick="editTopup('${t.id}')" style="flex:1;padding:8px;min-height:38px;">Edit</button>
-              <button class="btn-delete" onclick="deleteTopup('${t.id}')" style="flex:1;padding:8px;min-height:38px;">Padam</button>
-            </div>
+            <button class="btn-edit" onclick="editTopup('${t.id}')" style="padding:5px 12px;min-height:32px;font-size:12px;">Edit</button>
+            <button class="btn-delete" onclick="deleteTopup('${t.id}')" style="padding:5px 12px;min-height:32px;font-size:12px;">Padam</button>
           ` : ''}
         </div>
-      `).join('');
-  }
+      </div>
+    </div>
+  `;
+
+  const toggleBtn = hasMore ? `
+    <button
+      onclick="renderTopupList(${!showAll})"
+      style="width:100%;margin-top:10px;padding:10px;border:1px solid var(--border-strong);border-radius:10px;background:transparent;color:var(--primary);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s;"
+      onmouseover="this.style.background='var(--primary-light)'"
+      onmouseout="this.style.background='transparent'"
+    >
+      ${showAll ? '↑ Tunjuk Kurang' : `↓ Lihat Semua (${bajetData.length} rekod)`}
+    </button>
+  ` : '';
+
+  histEl.innerHTML =
+    '<div style="font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:14px;">Rekod Topup</div>' +
+    data.map(renderItem).join('') +
+    toggleBtn;
 }
 
 // ===== ALERTS =====

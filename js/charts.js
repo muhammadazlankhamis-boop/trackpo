@@ -306,45 +306,57 @@ function renderSebabChart() {
   });
 }
 
-// Pie chart kecil untuk sebab tak close dalam best day section
+// Sebab Tak Close — list dengan peratusan (bukan pie chart)
 function renderSebabPieChart() {
   const sebabCount = {};
   saleData.forEach(d => {
     const sebab = d.sebab_tak_close || [];
-    sebab.forEach(s => { sebabCount[s] = (sebabCount[s] || 0) + 1; });
+    sebab.forEach(s => {
+      if (s) sebabCount[s] = (sebabCount[s] || 0) + 1;
+    });
   });
 
-  const labels = Object.keys(sebabCount);
-  const values = Object.values(sebabCount);
+  // Destroy any existing chart instance
+  if (sebabChartInstance) {
+    sebabChartInstance.destroy();
+    sebabChartInstance = null;
+  }
 
-  if (labels.length === 0) return;
+  // Replace canvas with div list
+  const canvas = document.getElementById('sebabChart');
+  if (!canvas) return;
 
-  const ctx = document.getElementById('sebabChart')?.getContext('2d');
-  if (!ctx) return;
+  const container = canvas.parentElement;
+  const entries = Object.entries(sebabCount).sort((a, b) => b[1] - a[1]);
+  const total = entries.reduce((s, [, v]) => s + v, 0);
 
-  if (sebabChartInstance) sebabChartInstance.destroy();
+  if (entries.length === 0) {
+    container.innerHTML = '<div style="color:var(--text-secondary);font-size:13px;padding:12px 0;">Tiada data</div>';
+    return;
+  }
 
-  sebabChartInstance = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels,
-      datasets: [{
-        data: values,
-        backgroundColor: [
-          'rgba(248,81,73,0.7)', 'rgba(240,165,0,0.7)',
-          'rgba(88,166,255,0.7)', 'rgba(201,168,76,0.7)', 'rgba(63,185,80,0.7)'
-        ],
-        borderWidth: 0
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { position: 'right', labels: { padding: 10, font: { size: 10 } } }
-      }
-    }
-  });
+  const colors = ['#EF4444', '#F59E0B', '#3B82F6', '#C9A84C', '#22C55E', '#8B5CF6'];
+
+  container.innerHTML = `
+    <div id="sebabList" style="display:flex;flex-direction:column;gap:10px;padding:4px 0;">
+      ${entries.map(([label, count], i) => {
+        const pct = Math.round((count / total) * 100);
+        const color = colors[i % colors.length];
+        return `
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+              <span style="font-size:13px;font-weight:500;color:var(--text-primary);">${label}</span>
+              <span style="font-size:13px;font-weight:700;color:${color};">${pct}%</span>
+            </div>
+            <div style="height:6px;background:var(--border);border-radius:999px;overflow:hidden;">
+              <div style="height:100%;width:${pct}%;background:${color};border-radius:999px;transition:width 0.5s ease;"></div>
+            </div>
+            <div style="font-size:11px;color:var(--text-secondary);margin-top:3px;">${count} kes</div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
 }
 
 function destroyChart(canvasId) {

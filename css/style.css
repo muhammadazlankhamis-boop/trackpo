@@ -1555,3 +1555,44 @@ select:focus-visible {
     font-size: 17px;
   }
 }
+
+
+/* ===== TWO COL SECTION — mobile stack ===== */
+@media (max-width: 768px) {
+  .two-col-section {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ===== BEST DAY — no truncate ===== */
+.best-day-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--bg);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  min-width: 0;
+}
+
+.best-day-date {
+  font-size: 13px;
+  font-weight: 600;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.best-day-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .best-day-date { font-size: 12px; }
+  .best-day-value { font-size: 13px; }
+}
