@@ -4,6 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TRACKPO — Log Masuk</title>
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+  <meta name="theme-color" content="#6C63FF" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="TRACKPO" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -183,7 +191,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const SUPABASE_URL = 'https://dhyddyhbpmzstbhrsgrq.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRoeWRkeWhicG16c3RiaHJzZ3JxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5MDg5MDMsImV4cCI6MjA5OTQ4NDkwM30.czIG6b_zWhZlFj3MNfFVv6Yb65cL5DD_7yLmV37rFCM';      const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRoeWRkeWhicG16c3RiaHJzZ3JxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzYzMzI2NDQsImV4cCI6MjA1MTkwODY0NH0.placeholder';
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     async function handleLogin() {
       const input = document.getElementById('inputLogin').value.trim();
@@ -229,6 +238,13 @@
           });
       }
     });
+  </script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      });
+    }
   </script>
 </body>
 </html>
