@@ -964,6 +964,7 @@ tbody td { padding: 12px 16px; white-space: nowrap; }
 .bajet-balance { font-size: 32px; font-weight: 800; letter-spacing: -1px; margin: 6px 0; }
 .bajet-balance.positive { color: var(--green); }
 .bajet-balance.negative { color: var(--red); }
+.bajet-balance.warning { color: var(--orange); }
 .bajet-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 14px 0; }
 .bajet-stat-value { font-size: 16px; font-weight: 700; }
 .bajet-stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }

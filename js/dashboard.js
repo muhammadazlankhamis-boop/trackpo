@@ -368,13 +368,28 @@ async function updateBalanceKPI() {
   const balanceBadge = getBalanceBadge(balance, thresholdAmount);
   document.getElementById('kpiBalanceBadge').innerHTML = `<span class="badge ${balanceBadge.class}">${balanceBadge.text}</span>`;
 
-  // Update bajet section
+  // Update bajet section — colour-coded balance
   const bajetBalance = document.getElementById('bajetBalance');
   bajetBalance.textContent = (balance < 0 ? '-' : '') + formatRM(Math.abs(balance));
-  bajetBalance.className = `bajet-balance ${balance < 0 ? 'negative' : 'positive'}`;
+  bajetBalance.className = `bajet-balance ${balance < 0 ? 'negative' : balance < 100 ? 'warning' : 'positive'}`;
 
-  document.getElementById('bajetTotalTopup').textContent = formatRM(totalTopup);
-  document.getElementById('bajetTotalSpend').textContent = formatRM(totalSpendAllTime);
+  // Status label
+  const bajetStatusEl = document.getElementById('bajetStatus');
+  if (bajetStatusEl) {
+    if (balance < 0) {
+      bajetStatusEl.textContent = 'Topup diperlukan!';
+      bajetStatusEl.style.color = 'var(--red)';
+      bajetStatusEl.style.background = 'var(--red-light)';
+    } else if (balance < 100) {
+      bajetStatusEl.textContent = 'Perlu Topup';
+      bajetStatusEl.style.color = 'var(--orange)';
+      bajetStatusEl.style.background = 'var(--orange-light)';
+    } else {
+      bajetStatusEl.textContent = 'OK';
+      bajetStatusEl.style.color = 'var(--green)';
+      bajetStatusEl.style.background = 'var(--green-light)';
+    }
+  }
 
   // Progress bar
   if (totalTopup > 0) {

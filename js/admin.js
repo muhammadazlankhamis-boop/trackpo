@@ -138,7 +138,7 @@ async function loadClientExtraData(clientIds) {
   try {
     const [topupsRes, marketingRes, saleRes] = await Promise.all([
       sbClient.from('bajet').select('client_id, jumlah').in('client_id', clientIds),
-      sbClient.from('data_marketing').select('client_id, tarikh_mula, spend_sst, created_at').in('client_id', clientIds).order('tarikh_mula', { ascending: false }),
+      sbClient.from('data_marketing').select('client_id, tarikh_mula, tarikh_akhir, is_bulk, spend_sst, created_at').in('client_id', clientIds).order('tarikh_akhir', { ascending: false }),
       sbClient.from('data_sale').select('client_id, tarikh, created_at').in('client_id', clientIds).order('tarikh', { ascending: false })
     ]);
 
@@ -161,7 +161,8 @@ async function loadClientExtraData(clientIds) {
 
     const _sMktMap = {};
     (marketingRes.data || []).forEach(d => {
-      const t = d.tarikh_mula || d.created_at;
+      // Guna tarikh_akhir untuk bulk, tarikh_mula untuk harian
+      const t = (d.is_bulk ? d.tarikh_akhir : d.tarikh_mula) || d.created_at;
       if (!_sMktMap[d.client_id] || t > _sMktMap[d.client_id]) _sMktMap[d.client_id] = t;
     });
 
@@ -232,10 +233,20 @@ function renderClientCards(clients, topupMap, spendMap, lastUpdateMap) {
     const healthScore = isStale ? 20 : balance < 0 ? 30 : hasAlert ? 50 : 75;
     const health = getHealthLabel(healthScore);
 
-    const updateText = daysSinceUpdate === null ? 'Belum ada data' :
-      daysSinceUpdate === 0 ? 'Hari ini' :
-      daysSinceUpdate === 1 ? 'Semalam' :
-      `${daysSinceUpdate} hari lepas`;
+    // Tunjuk tarikh data sebenar + berapa hari lepas
+    const lastSaleTarikh = window._lastSaleMap?.[client.id];
+    const lastMktTarikh = window._lastMktMap?.[client.id];
+    const lastAnyTarikh = lastUpdate;
+
+    let updateText;
+    if (!lastAnyTarikh) {
+      updateText = 'Belum ada data';
+    } else {
+      const dayLabel = daysSinceUpdate === 0 ? 'hari ini' :
+        daysSinceUpdate === 1 ? 'semalam' :
+        `${daysSinceUpdate} hari lepas`;
+      updateText = `${formatDate(lastAnyTarikh)} · ${dayLabel}`;
+    }
 
     const totalTopup = topupMap[client.id] || 0;
     const totalSpend = spendMap[client.id] || 0;
@@ -257,16 +268,12 @@ function renderClientCards(clients, topupMap, spendMap, lastUpdateMap) {
         </div>
 
         <div style="margin-bottom:12px;">
-          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
             <span style="font-size:12px;color:var(--text-secondary);">Balance Bajet</span>
-            <span style="font-size:14px;font-weight:700;color:${balanceColor};">${formatRM(Math.abs(balance))}</span>
-          </div>
-          <div class="progress-bar">
-            <div class="progress-fill" style="width:${usedPct}%;background:${usedPct > 90 ? 'var(--red)' : usedPct > 70 ? 'var(--orange)' : 'var(--green)'};"></div>
-          </div>
-          <div style="display:flex;justify-content:space-between;margin-top:4px;">
-            <span style="font-size:11px;color:var(--text-secondary);">Total Topup: ${formatRM(totalTopup)}</span>
-            <span style="font-size:11px;color:var(--text-secondary);">${usedPct.toFixed(0)}% digunakan</span>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:15px;font-weight:800;color:${balanceColor};">${balance < 0 ? '-' : ''}${formatRM(Math.abs(balance))}</span>
+              <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;background:${balance < 0 ? 'var(--red-light)' : balance < 100 ? 'var(--orange-light)' : 'var(--green-light)'};color:${balance < 0 ? 'var(--red)' : balance < 100 ? 'var(--orange)' : 'var(--green)'};">${balance < 0 ? 'Topup!' : balance < 100 ? 'Perlu Topup' : 'OK'}</span>
+            </div>
           </div>
         </div>
 
@@ -306,10 +313,10 @@ async function openStaleModal() {
     // Fetch last sale tarikh and marketing tarikh_mula per client
     const [saleRes, mktRes] = await Promise.all([
       sbClient.from('data_sale').select('client_id, tarikh').in('client_id', clientIds).order('tarikh', { ascending: false }),
-      sbClient.from('data_marketing').select('client_id, tarikh_mula').in('client_id', clientIds).order('tarikh_mula', { ascending: false })
+      sbClient.from('data_marketing').select('client_id, tarikh_mula, tarikh_akhir, is_bulk').in('client_id', clientIds).order('tarikh_akhir', { ascending: false })
     ]);
 
-    // Build last tarikh maps (most recent tarikh per client)
+    // Build last tarikh maps — guna tarikh_akhir untuk bulk
     const lastSaleMap = {};
     (saleRes.data || []).forEach(d => {
       if (!lastSaleMap[d.client_id]) lastSaleMap[d.client_id] = d.tarikh;
@@ -317,7 +324,8 @@ async function openStaleModal() {
 
     const lastMktMap = {};
     (mktRes.data || []).forEach(d => {
-      if (!lastMktMap[d.client_id]) lastMktMap[d.client_id] = d.tarikh_mula;
+      const t = d.is_bulk ? d.tarikh_akhir : d.tarikh_mula;
+      if (!lastMktMap[d.client_id]) lastMktMap[d.client_id] = t;
     });
 
     // Client stale jika MANA-MANA SATU >2 hari atau tiada data

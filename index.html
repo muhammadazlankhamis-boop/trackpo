@@ -307,21 +307,13 @@
         </div>
 
         <div>
-          <div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">Balance</div>
-          <div class="bajet-balance" id="bajetBalance">-</div>
-          <div class="progress-bar" style="height:8px;margin-top:10px;">
+          <div style="font-size:11px;color:var(--text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Balance</div>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+            <div class="bajet-balance" id="bajetBalance">-</div>
+            <span id="bajetStatus" style="font-size:12px;font-weight:700;padding:4px 12px;border-radius:999px;">-</span>
+          </div>
+          <div class="progress-bar" style="height:6px;">
             <div class="progress-fill fill-green" id="bajetProgress" style="width:0%"></div>
-          </div>
-        </div>
-
-        <div class="bajet-stats">
-          <div class="bajet-stat">
-            <div class="bajet-stat-value" id="bajetTotalTopup">-</div>
-            <div class="bajet-stat-label">Total Topup</div>
-          </div>
-          <div class="bajet-stat">
-            <div class="bajet-stat-value" id="bajetTotalSpend">-</div>
-            <div class="bajet-stat-label">Total Spend+SST</div>
           </div>
         </div>
 
