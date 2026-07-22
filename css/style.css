@@ -1597,3 +1597,59 @@ select:focus-visible {
   .best-day-date { font-size: 12px; }
   .best-day-value { font-size: 13px; }
 }
+
+
+/* ===== POST CUSTOM DROPDOWN ===== */
+.post-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0; right: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  z-index: 600;
+  max-height: 220px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.post-dropdown.hidden { display: none; }
+
+.post-dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 14px;
+  cursor: pointer;
+  transition: background 0.1s;
+  border-bottom: 1px solid var(--border);
+}
+
+.post-dropdown-item:last-child { border-bottom: none; }
+
+.post-dropdown-item:hover {
+  background: var(--primary-light);
+}
+
+.post-dropdown-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.post-dropdown-count {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary);
+  background: var(--primary-light);
+  padding: 2px 8px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  margin-left: 8px;
+}

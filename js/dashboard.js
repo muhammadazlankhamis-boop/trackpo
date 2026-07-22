@@ -1150,16 +1150,78 @@ async function loadComparison() {
   document.getElementById('comparisonResult').classList.remove('hidden');
 }
 
-// ===== POST LIST DATALIST =====
+// ===== POST LIST — Custom Dropdown =====
+let postListData = []; // { nama_post, link_post, count }
+
 async function loadPostList() {
-  const { data } = await sbClient
+  // Fetch post_list dengan link_post
+  const { data: posts } = await sbClient
     .from('post_list')
-    .select('nama_post')
+    .select('nama_post, link_post')
     .eq('client_id', currentClient.id)
     .order('nama_post');
 
-  const datalist = document.getElementById('namaPostList');
-  if (datalist && data) {
-    datalist.innerHTML = data.map(p => `<option value="${p.nama_post}">`).join('');
+  // Fetch usage count dari data_marketing
+  const { data: mktData } = await sbClient
+    .from('data_marketing')
+    .select('nama_post')
+    .eq('client_id', currentClient.id)
+    .not('nama_post', 'is', null);
+
+  // Build count map
+  const countMap = {};
+  (mktData || []).forEach(d => {
+    if (d.nama_post) countMap[d.nama_post] = (countMap[d.nama_post] || 0) + 1;
+  });
+
+  // Merge
+  postListData = (posts || []).map(p => ({
+    nama_post: p.nama_post,
+    link_post: p.link_post || '',
+    count: countMap[p.nama_post] || 0
+  })).sort((a, b) => b.count - a.count); // sort by most used
+}
+
+function showPostDropdown() {
+  renderPostDropdown(document.getElementById('marketingNamaPost').value);
+}
+
+function hidePostDropdown() {
+  const dd = document.getElementById('postDropdown');
+  if (dd) dd.classList.add('hidden');
+}
+
+function filterPostDropdown(val) {
+  renderPostDropdown(val);
+}
+
+function renderPostDropdown(filterVal) {
+  const dd = document.getElementById('postDropdown');
+  if (!dd) return;
+
+  const filtered = postListData.filter(p =>
+    !filterVal || p.nama_post.toLowerCase().includes(filterVal.toLowerCase())
+  );
+
+  if (filtered.length === 0) {
+    dd.classList.add('hidden');
+    return;
   }
+
+  dd.innerHTML = filtered.map(p => `
+    <div class="post-dropdown-item" onmousedown="selectPost('${p.nama_post.replace(/'/g, "\'")}', '${(p.link_post || '').replace(/'/g, "\'")}')">
+      <span class="post-dropdown-name">${p.nama_post}</span>
+      ${p.count > 0 ? `<span class="post-dropdown-count">×${p.count}</span>` : ''}
+    </div>
+  `).join('');
+
+  dd.classList.remove('hidden');
+}
+
+function selectPost(namaPost, linkPost) {
+  const namaEl = document.getElementById('marketingNamaPost');
+  const linkEl = document.getElementById('marketingLinkPost');
+  if (namaEl) namaEl.value = namaPost;
+  if (linkEl && linkPost) linkEl.value = linkPost;
+  hidePostDropdown();
 }

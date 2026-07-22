@@ -122,10 +122,14 @@ async function saveMarketing() {
   showLoading();
 
   const namaPost = document.getElementById('marketingNamaPost').value.trim();
+  const linkPostVal = document.getElementById('marketingLinkPost').value.trim();
   if (namaPost) {
+    // Save nama_post + link_post ke post_list (update link kalau ada)
     await sbClient.from('post_list').upsert({
-      client_id: currentClient.id, nama_post: namaPost
-    }, { onConflict: 'client_id,nama_post', ignoreDuplicates: true });
+      client_id: currentClient.id,
+      nama_post: namaPost,
+      ...(linkPostVal ? { link_post: linkPostVal } : {})
+    }, { onConflict: 'client_id,nama_post' });
   }
 
   const payload = {
