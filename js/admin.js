@@ -698,24 +698,20 @@ async function saveUser() {
   showLoading();
   try {
     const email = `${username}@trackpo.app`;
-    const { data: authData, error: authError } = await sbClient.auth.admin.createUser({
-      email, password, email_confirm: true
+
+    // Guna RPC function — create_client_user (SECURITY DEFINER)
+    const { data, error } = await sbClient.rpc('create_client_user', {
+      p_email: email,
+      p_password: password,
+      p_client_id: clientId,
+      p_nama: nama || username
     });
 
-    if (authError) throw authError;
-
-    const { error: profileError } = await sbClient.from('profiles').insert({
-      id: authData.user.id,
-      email,
-      role: 'client',
-      client_id: clientId,
-      nama: nama || username
-    });
-
-    if (profileError) throw profileError;
+    if (error) throw error;
+    if (data && !data.success) throw new Error(data.error || 'Gagal buat akaun');
 
     closeUserModal();
-    showToast(`Login berjaya dibuat! Username: ${username}`, 'success');
+    showToast(`✅ Akaun berjaya dibuat! Username: ${username} | Password: ${password}`, 'success', 6000);
     loadUsersTable();
   } catch (err) {
     showToast('Gagal buat akaun: ' + err.message, 'error');
