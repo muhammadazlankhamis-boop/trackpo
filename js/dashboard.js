@@ -645,7 +645,7 @@ function toggleFilterDropdown() {
   if (!isOpen) {
     setTimeout(() => {
       document.addEventListener('click', closeFilterDropdownOutside, { once: true });
-    }, 0);
+    }, 100);
   }
 
   btn.classList.toggle('open', !isOpen);
