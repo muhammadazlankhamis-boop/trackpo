@@ -641,8 +641,12 @@ function toggleFilterDropdown() {
   const menu = document.getElementById('filterDropdownMenu');
   const isOpen = menu.classList.contains('open');
 
-  // Close on click outside
   if (!isOpen) {
+    // Kira posisi butang, letak menu tepat di bawahnya
+    const rect = btn.getBoundingClientRect();
+    menu.style.top = (rect.bottom + 8) + 'px';
+    menu.style.left = rect.left + 'px';
+
     setTimeout(() => {
       document.addEventListener('click', closeFilterDropdownOutside, { once: true });
     }, 100);

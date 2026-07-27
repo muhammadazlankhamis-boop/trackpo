@@ -377,13 +377,12 @@ body {
 .filter-dropdown-btn.open .filter-dropdown-arrow { transform: rotate(180deg); }
 
 .filter-dropdown-menu {
-  position: absolute;
-  top: calc(100% + 8px); left: 0;
+  position: fixed;
   background: var(--bg-card);
   border: 1px solid var(--border-strong);
   border-radius: 14px;
   box-shadow: var(--shadow-lg);
-  z-index: 500;
+  z-index: 2000;
   min-width: 180px;
   overflow: hidden;
   opacity: 0; pointer-events: none;
