@@ -358,8 +358,8 @@ async function updateBalanceKPI() {
   const balance = totalTopup - totalSpendAllTime;
 
   const balanceEl = document.getElementById('kpiBalance');
-  balanceEl.textContent = formatRM(Math.abs(balance));
-  balanceEl.className = `kpi-value ${balance < 0 ? 'text-red' : ''}`;
+    balanceEl.textContent = (balance < 0 ? '-' : '') + formatRM(Math.abs(balance));
+    balanceEl.className = `kpi-value ${balance < 0 ? 'text-red' : ''}`;
 
   const thresholdAmount = tetapan.budget_threshold_pct
     ? (tetapan.budget_threshold_pct / 100) * totalTopup
