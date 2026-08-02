@@ -562,8 +562,14 @@
 
       <div class="settings-section">
         <div class="settings-title">Export</div>
-        <button class="btn btn-primary btn-full" onclick="exportPDF()">
+        <button class="btn btn-primary btn-full" onclick="exportPDF()" style="margin-bottom:10px;">
           📄 Download PDF Report
+        </button>
+        <button class="btn btn-secondary btn-full" onclick="exportSaleCSV()" style="margin-bottom:10px;">
+          📊 Export CSV — Data Sale
+        </button>
+        <button class="btn btn-secondary btn-full" onclick="exportMarketingCSV()">
+          📊 Export CSV — Data Marketing
         </button>
       </div>
     </section>
@@ -894,6 +900,7 @@
 <script src="js/bajet.js"></script>
 <script src="js/charts.js"></script>
 <script src="js/pdf.js"></script>
+<script src="js/csv-export.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
