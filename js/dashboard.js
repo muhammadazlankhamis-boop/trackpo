@@ -1242,4 +1242,19 @@ function applyFokusServisDisplay() {
     card.style.opacity = isLeadFocus ? '0.55' : '1';
     card.style.order = isLeadFocus ? '99' : '0';
   });
+
+  // Sorok tab Closing & Sebab untuk Lead Generation
+  document.querySelectorAll('.chart-tab').forEach(tab => {
+    const label = tab.textContent.trim();
+    if (label === 'Closing' || label === 'Sebab') {
+      tab.style.display = isLeadFocus ? 'none' : '';
+    }
+  });
+
+  // Kalau tab semasa yang disorok, tukar balik ke 'Sale & Lead'
+  if (isLeadFocus && (currentChartTab === 'closing' || currentChartTab === 'sebab')) {
+    currentChartTab = 'sale-lead';
+    document.querySelectorAll('.chart-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector('.chart-tab')?.classList.add('active');
+  }
 }
