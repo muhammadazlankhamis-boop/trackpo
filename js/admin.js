@@ -521,6 +521,7 @@ function openAddClientModal() {
   document.getElementById('clientPakej').value = '';
   document.getElementById('clientTarikhMula').value = toInputDate(nowMY());
   document.getElementById('clientStatus').value = 'Aktif';
+  document.getElementById('clientFokusServis').value = 'lead_generation';
   document.getElementById('clientTargetLead').value = '';
   document.getElementById('clientTargetSale').value = '';
   document.getElementById('clientBenchmarkCPL').value = '';
@@ -551,6 +552,7 @@ async function editClient(id) {
   document.getElementById('clientPakej').value = client.pakej || '';
   document.getElementById('clientTarikhMula').value = client.tarikh_mula || '';
   document.getElementById('clientStatus').value = client.status || 'Aktif';
+  document.getElementById('clientFokusServis').value = client.fokus_servis || 'lead_generation';
 
   const tetapan = client.tetapan_client?.[0];
   if (tetapan) {
@@ -577,6 +579,7 @@ async function saveClient() {
       pakej: document.getElementById('clientPakej').value || null,
       tarikh_mula: document.getElementById('clientTarikhMula').value || null,
       status: document.getElementById('clientStatus').value || 'Aktif',
+      fokus_servis: document.getElementById('clientFokusServis').value || 'lead_generation',
       updated_at: new Date().toISOString()
     };
 
