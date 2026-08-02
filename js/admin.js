@@ -219,7 +219,37 @@ function renderClientCards(clients, topupMap, spendMap, lastUpdateMap) {
   const grid = document.getElementById('clientGrid');
   if (!grid) return;
 
-  grid.innerHTML = clients.map(client => {
+  // Group clients ikut pakej
+  const groups = {};
+  clients.forEach(client => {
+    const pakejKey = client.pakej || 'Tiada Pakej';
+    if (!groups[pakejKey]) groups[pakejKey] = [];
+    groups[pakejKey].push(client);
+  });
+
+  // Susun: pakej berabjad dulu, "Tiada Pakej" last sekali
+  const sortedPakejNames = Object.keys(groups).sort((a, b) => {
+    if (a === 'Tiada Pakej') return 1;
+    if (b === 'Tiada Pakej') return -1;
+    return a.localeCompare(b);
+  });
+
+  grid.innerHTML = sortedPakejNames.map(pakejName => {
+    const clientCards = groups[pakejName].map(client => renderSingleClientCard(client, topupMap, spendMap, lastUpdateMap)).join('');
+    return `
+      <div style="grid-column: 1 / -1;">
+        <div style="font-size:14px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.6px;margin:20px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--border);">
+          ${pakejName} <span style="font-weight:500;color:var(--text-tertiary);">— ${groups[pakejName].length} client</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(300px, 1fr));gap:16px;">
+          ${clientCards}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderSingleClientCard(client, topupMap, spendMap, lastUpdateMap) {
     const lastUpdate = lastUpdateMap[client.id];
     const daysSinceUpdate = lastUpdate ? daysSince(lastUpdate) : null;
     const isStale = daysSinceUpdate === null || daysSinceUpdate > 2;
@@ -233,9 +263,6 @@ function renderClientCards(clients, topupMap, spendMap, lastUpdateMap) {
     const healthScore = isStale ? 20 : balance < 0 ? 30 : hasAlert ? 50 : 75;
     const health = getHealthLabel(healthScore);
 
-    // Tunjuk tarikh data sebenar + berapa hari lepas
-    const lastSaleTarikh = window._lastSaleMap?.[client.id];
-    const lastMktTarikh = window._lastMktMap?.[client.id];
     const lastAnyTarikh = lastUpdate;
 
     let updateText;
@@ -250,7 +277,6 @@ function renderClientCards(clients, topupMap, spendMap, lastUpdateMap) {
 
     const totalTopup = topupMap[client.id] || 0;
     const totalSpend = spendMap[client.id] || 0;
-    const usedPct = totalTopup > 0 ? Math.min((totalSpend / totalTopup) * 100, 100) : 0;
     const balanceColor = balance < 0 ? 'var(--red)' : hasAlert ? 'var(--orange)' : 'var(--green)';
     const borderColor = isStale ? 'var(--orange)' : hasAlert ? 'var(--red)' : balance < 0 ? 'var(--red)' : 'var(--primary)';
 
@@ -291,7 +317,6 @@ function renderClientCards(clients, topupMap, spendMap, lastUpdateMap) {
         </div>
       </div>
     `;
-  }).join('');
 }
 
 
