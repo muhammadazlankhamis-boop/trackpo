@@ -66,6 +66,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
+  applyFokusServisDisplay();
+
   // Set nama
   const clientNameUpper = (currentClient.nama_bisnes || '-').toUpperCase();
   document.getElementById('clientNameHeader').textContent = clientNameUpper;
@@ -1228,4 +1230,16 @@ function selectPost(namaPost, linkPost) {
   if (namaEl) namaEl.value = namaPost;
   if (linkEl && linkPost) linkEl.value = linkPost;
   hidePostDropdown();
+}
+
+function applyFokusServisDisplay() {
+  const fokus = currentClient?.fokus_servis || 'lead_generation';
+  const isLeadFocus = fokus === 'lead_generation';
+
+  ['kpiCardSale', 'kpiCardClosing', 'kpiCardROAS'].forEach(id => {
+    const card = document.getElementById(id);
+    if (!card) return;
+    card.style.opacity = isLeadFocus ? '0.55' : '1';
+    card.style.order = isLeadFocus ? '99' : '0';
+  });
 }
