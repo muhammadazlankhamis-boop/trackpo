@@ -1,5 +1,11 @@
 // ===== TRACKPO — CSV EXPORT =====
 
+function setCsvDateShortcut(type) {
+  const { start, end } = getDateRange(type);
+  document.getElementById('csvExportStart').value = start;
+  document.getElementById('csvExportEnd').value = end;
+}
+
 function arrayToCSV(rows, headers) {
   const escapeCell = (val) => {
     if (val === null || val === undefined) return '';
@@ -30,11 +36,27 @@ function downloadCSV(csvContent, filename) {
   URL.revokeObjectURL(url);
 }
 
-function exportSaleCSV() {
-  if (!saleData || saleData.length === 0) {
-    showToast('Tiada data sale untuk export', 'warning');
+async function exportSaleCSV() {
+  const start = document.getElementById('csvExportStart').value;
+  const end = document.getElementById('csvExportEnd').value;
+
+  if (!start || !end) {
+    showToast('Sila pilih tarikh mula dan akhir', 'error');
     return;
   }
+
+  showLoading();
+  const { data, error } = await sbClient
+    .from('data_sale')
+    .select('*')
+    .eq('client_id', currentClient.id)
+    .gte('tarikh', start)
+    .lte('tarikh', end)
+    .order('tarikh', { ascending: true });
+  hideLoading();
+
+  if (error) { showToast('Gagal export: ' + error.message, 'error'); return; }
+  if (!data || data.length === 0) { showToast('Tiada data sale untuk tempoh ini', 'warning'); return; }
 
   const headers = [
     { key: 'tarikh', label: 'Tarikh' },
@@ -47,22 +69,38 @@ function exportSaleCSV() {
     { key: 'nota', label: 'Notes' }
   ];
 
-  const rows = saleData.map(d => ({
+  const rows = data.map(d => ({
     ...d,
     sebab_tak_close: Array.isArray(d.sebab_tak_close) ? d.sebab_tak_close.join('; ') : ''
   }));
 
   const csv = arrayToCSV(rows, headers);
-  const filename = `${currentClient.nama_bisnes}_Data_Sale_${toInputDate(nowMY())}.csv`;
+  const filename = `${currentClient.nama_bisnes}_Data_Sale_${start}_${end}.csv`;
   downloadCSV(csv, filename);
   showToast('CSV Data Sale dimuat turun!', 'success');
 }
 
-function exportMarketingCSV() {
-  if (!marketingData || marketingData.length === 0) {
-    showToast('Tiada data marketing untuk export', 'warning');
+async function exportMarketingCSV() {
+  const start = document.getElementById('csvExportStart').value;
+  const end = document.getElementById('csvExportEnd').value;
+
+  if (!start || !end) {
+    showToast('Sila pilih tarikh mula dan akhir', 'error');
     return;
   }
+
+  showLoading();
+  const { data, error } = await sbClient
+    .from('data_marketing')
+    .select('*')
+    .eq('client_id', currentClient.id)
+    .gte('tarikh_mula', start)
+    .lte('tarikh_mula', end)
+    .order('tarikh_mula', { ascending: true });
+  hideLoading();
+
+  if (error) { showToast('Gagal export: ' + error.message, 'error'); return; }
+  if (!data || data.length === 0) { showToast('Tiada data marketing untuk tempoh ini', 'warning'); return; }
 
   const headers = [
     { key: 'tarikh_mula', label: 'Tarikh Mula' },
@@ -84,8 +122,8 @@ function exportMarketingCSV() {
     { key: 'nota', label: 'Notes' }
   ];
 
-  const csv = arrayToCSV(marketingData, headers);
-  const filename = `${currentClient.nama_bisnes}_Data_Marketing_${toInputDate(nowMY())}.csv`;
+  const csv = arrayToCSV(data, headers);
+  const filename = `${currentClient.nama_bisnes}_Data_Marketing_${start}_${end}.csv`;
   downloadCSV(csv, filename);
   showToast('CSV Data Marketing dimuat turun!', 'success');
 }
