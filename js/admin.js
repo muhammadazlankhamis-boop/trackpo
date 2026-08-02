@@ -927,6 +927,62 @@ async function deleteObjektif(id) {
   loadObjektifList();
 }
 
+// ===== PAKEJ =====
+async function loadPakejList() {
+  try {
+    const { data: list } = await sbClient.from('pakej_list').select('*').order('nama');
+    const el = document.getElementById('pakejList');
+    if (!el) return;
+
+    if (!list || list.length === 0) {
+      el.innerHTML = '<div style="color:var(--text-secondary);font-size:13px;">Tiada pakej</div>';
+      return;
+    }
+
+    el.innerHTML = list.map(p => `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);">
+        <span>${p.nama}</span>
+        <button class="action-btn delete" onclick="deletePakej('${p.id}')">🗑️</button>
+      </div>
+    `).join('');
+  } catch (err) {
+    console.error('loadPakejList error:', err);
+  }
+}
+
+async function addPakej() {
+  const nama = document.getElementById('newPakej').value.trim();
+  if (!nama) { showToast('Sila isi nama pakej', 'error'); return; }
+  try {
+    await sbClient.from('pakej_list').insert({ nama, is_default: false });
+    document.getElementById('newPakej').value = '';
+    showToast('Pakej ditambah!', 'success');
+    loadPakejList();
+    loadPakejDropdown();
+  } catch (err) {
+    showToast('Gagal: ' + err.message, 'error');
+  }
+}
+
+async function deletePakej(id) {
+  if (!confirmAction('Padam pakej ini? Client yang guna pakej ini akan jadi "Tiada Pakej".')) return;
+  await sbClient.from('pakej_list').delete().eq('id', id);
+  showToast('Pakej dipadam', 'success');
+  loadPakejList();
+  loadPakejDropdown();
+}
+
+async function loadPakejDropdown() {
+  const { data: list } = await sbClient.from('pakej_list').select('nama').order('nama');
+  const select = document.getElementById('clientPakej');
+  if (!select) return;
+
+  const currentVal = select.value;
+  select.innerHTML = '<option value="">Pilih Pakej</option>' +
+    (list || []).map(p => `<option value="${p.nama}">${p.nama}</option>`).join('');
+  select.value = currentVal;
+}
+
 // ===== THEME & PASSWORD =====
 function toggleTheme(isDark) { applyTheme(isDark ? 'dark' : 'light'); }
 
