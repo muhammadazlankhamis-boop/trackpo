@@ -486,6 +486,7 @@ async function loadClientsTable() {
 }
 
 function openAddClientModal() {
+  loadPakejDropdown();
   document.getElementById('clientEditId').value = '';
   document.getElementById('modalClientTitle').textContent = 'Tambah Client';
   document.getElementById('clientNamaBisnes').value = '';
@@ -515,6 +516,7 @@ async function editClient(id) {
     return;
   }
 
+  await loadPakejDropdown();
   document.getElementById('clientEditId').value = client.id;
   document.getElementById('modalClientTitle').textContent = 'Edit Client';
   document.getElementById('clientNamaBisnes').value = client.nama_bisnes || '';
