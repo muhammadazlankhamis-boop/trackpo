@@ -91,7 +91,7 @@ function showAdminSection(section) {
   if (section === 'clients') loadClientsTable();
   if (section === 'users') loadUsersTable();
   if (section === 'log') loadActivityLog();
-  if (section === 'settings') loadObjektifList();
+  if (section === 'settings') { loadObjektifList(); loadPakejList(); }
 }
 
 // ===== DASHBOARD =====
