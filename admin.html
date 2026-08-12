@@ -7,11 +7,13 @@
   <link rel="manifest" href="/manifest.json" />
   <link rel="icon" type="image/png" href="/favicon.png" />
   <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
-  <meta name="theme-color" content="#6C63FF" />
+  <meta name="theme-color" content="#16A34A" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="TRACKPO" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/theme.css" />
   <link rel="stylesheet" href="css/style.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -23,7 +25,7 @@
 
 <div class="app-layout">
 
-  <!-- SIDEBAR -->
+  <!-- SIDEBAR — icon-only -->
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="sidebar-logo-mark">T</div>
@@ -33,24 +35,24 @@
       </div>
     </div>
     <ul class="sidebar-nav">
-      <li><a href="#" class="active" onclick="showAdminSection('dashboard')">
-        <span class="nav-icon">🏠</span> Dashboard
+      <li><a href="#" class="active" onclick="showAdminSection('dashboard')" title="Dashboard">
+        <span class="nav-icon">🏠</span>
       </a></li>
-      <li><a href="#" onclick="showAdminSection('clients')">
-        <span class="nav-icon">👥</span> Manage Client
+      <li><a href="#" onclick="showAdminSection('clients')" title="Manage Client">
+        <span class="nav-icon">👥</span>
       </a></li>
-      <li><a href="#" onclick="showAdminSection('users')">
-        <span class="nav-icon">👤</span> Manage User
+      <li><a href="#" onclick="showAdminSection('users')" title="Manage User">
+        <span class="nav-icon">👤</span>
       </a></li>
-      <li><a href="#" onclick="showAdminSection('log')">
-        <span class="nav-icon">📋</span> Log Aktiviti
+      <li><a href="#" onclick="showAdminSection('log')" title="Log Aktiviti">
+        <span class="nav-icon">📋</span>
       </a></li>
-      <li><a href="#" onclick="showAdminSection('settings')">
-        <span class="nav-icon">⚙️</span> Settings
+      <li><a href="#" onclick="showAdminSection('settings')" title="Settings">
+        <span class="nav-icon">⚙️</span>
       </a></li>
     </ul>
     <div class="sidebar-user">
-      <div class="user-avatar" id="adminAvatar">A</div>
+      <div class="user-avatar" id="adminAvatar" title="Log Keluar" onclick="logout()">A</div>
       <div class="user-info">
         <div class="user-name" id="adminName">Admin</div>
         <div class="user-role">Administrator</div>
@@ -198,7 +200,7 @@
         <div class="settings-title">Senarai Objektif</div>
         <div id="objektifList" style="margin-bottom:16px;"></div>
         <div style="display:flex;gap:8px;">
-          <input type="text" id="newObjektif" placeholder="Nama objektif baru" style="flex:1;padding:10px 14px;background:var(--bg-input);border:1px solid var(--border-strong);border-radius:10px;color:var(--text-primary);font-family:inherit;outline:none;" />
+          <input type="text" id="newObjektif" placeholder="Nama objektif baru" style="flex:1;padding:10px 14px;background:var(--bg-input);border:1px solid var(--border-strong);border-radius:14px;color:var(--text-primary);font-family:inherit;outline:none;" />
           <button class="btn btn-primary" onclick="addObjektif()">Tambah</button>
         </div>
       </div>
@@ -207,7 +209,7 @@
         <div class="settings-title">Senarai Pakej</div>
         <div id="pakejList" style="margin-bottom:16px;"></div>
         <div style="display:flex;gap:8px;">
-          <input type="text" id="newPakej" placeholder="Nama pakej baru" style="flex:1;padding:10px 14px;background:var(--bg-input);border:1px solid var(--border-strong);border-radius:10px;color:var(--text-primary);font-family:inherit;outline:none;" />
+          <input type="text" id="newPakej" placeholder="Nama pakej baru" style="flex:1;padding:10px 14px;background:var(--bg-input);border:1px solid var(--border-strong);border-radius:14px;color:var(--text-primary);font-family:inherit;outline:none;" />
           <button class="btn btn-primary" onclick="addPakej()">Tambah</button>
         </div>
       </div>

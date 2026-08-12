@@ -7,11 +7,13 @@
   <link rel="manifest" href="/manifest.json" />
   <link rel="icon" type="image/png" href="/favicon.png" />
   <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
-  <meta name="theme-color" content="#6C63FF" />
+  <meta name="theme-color" content="#16A34A" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="TRACKPO" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/theme.css" />
   <link rel="stylesheet" href="css/style.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -29,7 +31,7 @@
 
 <div class="app-layout">
 
-  <!-- SIDEBAR (Desktop) -->
+  <!-- SIDEBAR (Desktop) — icon-only -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
       <div class="sidebar-logo-mark">T</div>
@@ -39,24 +41,24 @@
       </div>
     </div>
     <ul class="sidebar-nav">
-      <li><a href="#" class="active" onclick="showSection('dashboard')">
-        <span class="nav-icon">🏠</span> Dashboard
+      <li><a href="#" class="active" onclick="showSection('dashboard')" title="Dashboard">
+        <span class="nav-icon">🏠</span>
       </a></li>
-      <li><a href="#" onclick="showSection('ringkasan')">
-        <span class="nav-icon">📊</span> Ringkasan Mingguan
+      <li><a href="#" onclick="showSection('ringkasan')" title="Ringkasan Mingguan">
+        <span class="nav-icon">📊</span>
       </a></li>
-      <li><a href="#" onclick="showSection('comparison')">
-        <span class="nav-icon">🔄</span> Comparison
+      <li><a href="#" onclick="showSection('comparison')" title="Comparison">
+        <span class="nav-icon">🔄</span>
       </a></li>
-      <li><a href="#" onclick="showSection('rekod')">
-        <span class="nav-icon">📋</span> Rekod Data
+      <li><a href="#" onclick="showSection('rekod')" title="Rekod Data">
+        <span class="nav-icon">📋</span>
       </a></li>
-      <li><a href="#" onclick="showSection('settings')">
-        <span class="nav-icon">⚙️</span> Settings
+      <li><a href="#" onclick="showSection('settings')" title="Settings">
+        <span class="nav-icon">⚙️</span>
       </a></li>
     </ul>
     <div class="sidebar-user">
-      <div class="user-avatar" id="sidebarAvatar">A</div>
+      <div class="user-avatar" id="sidebarAvatar" title="Log Keluar" onclick="logout()">A</div>
       <div class="user-info">
         <div class="user-name" id="sidebarName">-</div>
         <div class="user-role" id="sidebarRole">Client</div>
