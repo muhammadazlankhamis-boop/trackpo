@@ -1,71 +1,73 @@
-/* ===== TRACKPO — DESIGN SYSTEM ===== */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+/* ===== TRACKPO — DESIGN SYSTEM v2 (Hijau/Light) ===== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap');
 
 :root {
   --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 
-  /* Purple primary (SalesHub) */
-  --primary: #6C63FF;
-  --primary-dark: #5A52E0;
-  --primary-light: rgba(108, 99, 255, 0.1);
-  --primary-border: rgba(108, 99, 255, 0.2);
+  /* Primary hijau */
+  --primary: #16A34A;
+  --primary-dark: #128A3E;
+  --primary-darker: #0E2E22;
+  --primary-light: rgba(22, 163, 74, 0.1);
+  --primary-border: rgba(22, 163, 74, 0.22);
 
   /* Semantic */
-  --green: #22C55E;
-  --green-light: rgba(34, 197, 94, 0.1);
-  --red: #EF4444;
-  --red-light: rgba(239, 68, 68, 0.1);
-  --orange: #F59E0B;
-  --orange-light: rgba(245, 158, 11, 0.1);
+  --green: #16A34A;
+  --green-light: rgba(22, 163, 74, 0.1);
+  --red: #E24444;
+  --red-light: rgba(226, 68, 68, 0.1);
+  --orange: #D97706;
+  --orange-light: rgba(217, 119, 6, 0.1);
   --blue: #3B82F6;
   --blue-light: rgba(59, 130, 246, 0.1);
 
-  /* Gold (TRACKPO brand accent) */
-  --gold: #C9A84C;
-  --gold-light: rgba(201, 168, 76, 0.1);
-  --gold-border: rgba(201, 168, 76, 0.2);
+  /* Gold accent (kekal untuk badge/highlight khas) */
+  --gold: #B8923F;
+  --gold-light: rgba(184, 146, 63, 0.1);
+  --gold-border: rgba(184, 146, 63, 0.2);
 
   /* Layout */
-  --sidebar-w: 240px;
+  --sidebar-w: 84px;
   --nav-h: 68px;
-  --header-h: 64px;
-  --content-gap: 24px;
+  --header-h: 72px;
+  --content-gap: 28px;
 }
 
-/* ===== LIGHT THEME (default - SalesHub style) ===== */
+/* ===== LIGHT THEME (default) ===== */
 :root, [data-theme="light"] {
-  --bg: #F0EFFF;
+  --bg: #EDEEEA;
   --bg-card: #FFFFFF;
-  --bg-card-hover: #FAFAFA;
-  --bg-input: #F5F5FF;
-  --bg-sidebar: #FFFFFF;
+  --bg-card-hover: #FAFAF8;
+  --bg-input: #FFFFFF;
+  --bg-sidebar: #F0F1EC;
 
-  --text-primary: #1A1A2E;
-  --text-secondary: #6E6E8F;
-  --text-tertiary: #AEAEC8;
+  --text-primary: #10231B;
+  --text-secondary: #6B7A72;
+  --text-tertiary: #A3ADA4;
 
-  --border: rgba(108, 99, 255, 0.08);
-  --border-strong: rgba(108, 99, 255, 0.15);
+  --border: rgba(16, 35, 27, 0.07);
+  --border-strong: rgba(16, 35, 27, 0.12);
 
-  --shadow-sm: 0 2px 8px rgba(108, 99, 255, 0.06);
-  --shadow-md: 0 4px 16px rgba(108, 99, 255, 0.1);
-  --shadow-lg: 0 8px 32px rgba(108, 99, 255, 0.14);
+  --shadow-sm: 0 2px 8px rgba(16, 35, 27, 0.05);
+  --shadow-md: 0 6px 20px rgba(16, 35, 27, 0.08);
+  --shadow-lg: 0 16px 40px rgba(16, 35, 27, 0.14);
 }
 
 /* ===== DARK THEME ===== */
 [data-theme="dark"] {
-  --bg: #0F0F1A;
-  --bg-card: #1A1A2E;
-  --bg-card-hover: #1E1E35;
-  --bg-input: #0F0F1A;
-  --bg-sidebar: #13131F;
+  --bg: #0D1712;
+  --bg-card: #152620;
+  --bg-card-hover: #1A2E27;
+  --bg-input: #0D1712;
+  --bg-sidebar: #11201A;
 
-  --text-primary: #F0F0FF;
-  --text-secondary: #8888AA;
-  --text-tertiary: #55556A;
+  --text-primary: #EDF5F0;
+  --text-secondary: #8FA599;
+  --text-tertiary: #56685E;
 
-  --border: rgba(108, 99, 255, 0.12);
-  --border-strong: rgba(108, 99, 255, 0.2);
+  --border: rgba(74, 222, 128, 0.12);
+  --border-strong: rgba(74, 222, 128, 0.2);
 
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
