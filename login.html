@@ -7,20 +7,20 @@
   <link rel="manifest" href="/manifest.json" />
   <link rel="icon" type="image/png" href="/favicon.png" />
   <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
-  <meta name="theme-color" content="#6C63FF" />
+  <meta name="theme-color" content="#16A34A" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="TRACKPO" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: 'Inter', -apple-system, sans-serif;
-      background: #F0EFFF;
-      color: #1A1A2E;
+      background: #EDEEEA;
+      color: #10231B;
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -28,149 +28,233 @@
       padding: 24px;
     }
 
-    .login-wrapper {
+    .login-shell {
       width: 100%;
-      max-width: 400px;
+      max-width: 1000px;
+      min-height: 600px;
+      background: #F0F1EC;
+      border-radius: 32px;
+      display: flex;
+      overflow: hidden;
+      box-shadow: 0 24px 64px rgba(16, 35, 27, 0.12);
     }
 
-    .login-logo {
-      text-align: center;
-      margin-bottom: 40px;
+    /* LEFT PANEL — FORM */
+    .login-left {
+      flex: 1;
+      padding: 56px 64px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 0;
     }
 
-    .logo-mark {
-      width: 56px; height: 56px;
-      background: linear-gradient(135deg, #6C63FF, #5A52E0);
-      border-radius: 16px;
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 56px;
+    }
+
+    .brand-mark {
+      width: 44px; height: 44px;
+      background: #16A34A;
+      border-radius: 12px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 24px; font-weight: 800; color: #fff;
-      margin: 0 auto 14px;
-      box-shadow: 0 8px 24px rgba(108,99,255,0.3);
+      font-size: 19px; font-weight: 800; color: #fff;
+      flex-shrink: 0;
     }
 
-    .login-logo h1 {
-      font-size: 24px; font-weight: 800;
-      color: #1A1A2E;
-      letter-spacing: -0.5px;
+    .brand-name { font-size: 19px; font-weight: 800; letter-spacing: -0.4px; color: #10231B; }
+    .brand-sub { font-size: 12.5px; color: #6B7A72; margin-top: 1px; }
+
+    .login-heading {
+      font-size: 38px;
+      font-weight: 800;
+      letter-spacing: -1.2px;
+      line-height: 1.05;
+      margin-bottom: 12px;
+      color: #10231B;
     }
 
-    .login-logo p {
-      font-size: 13px;
-      color: #6E6E8F;
-      margin-top: 4px;
+    .login-sub {
+      font-size: 15px;
+      color: #6B7A72;
+      margin-bottom: 32px;
+      line-height: 1.5;
     }
 
-    .login-card {
-      background: #FFFFFF;
-      border-radius: 20px;
-      padding: 32px;
-      box-shadow: 0 8px 32px rgba(108,99,255,0.1);
-      border: 1px solid rgba(108,99,255,0.1);
+    .error-msg {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      background: #FDEBEB;
+      color: #C0392B;
+      padding: 14px 18px;
+      border-radius: 14px;
+      font-size: 13.5px;
+      font-weight: 500;
+      margin-bottom: 24px;
+    }
+    .error-msg .err-icon {
+      width: 20px; height: 20px; border-radius: 50%;
+      background: #E24444; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 800; flex-shrink: 0;
     }
 
-    .login-card h2 {
-      font-size: 20px; font-weight: 700;
-      margin-bottom: 6px; letter-spacing: -0.3px;
-    }
-
-    .login-card p {
-      font-size: 13px; color: #6E6E8F;
-      margin-bottom: 28px;
-    }
-
-    .form-group { margin-bottom: 18px; }
+    .form-group { margin-bottom: 20px; }
 
     .form-group label {
       display: block;
-      font-size: 11px; font-weight: 600;
-      color: #6E6E8F;
-      text-transform: uppercase; letter-spacing: 0.5px;
-      margin-bottom: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #8B968F;
+      letter-spacing: 1.2px;
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 10px;
     }
+
+    .input-wrap { position: relative; }
 
     .form-group input {
       width: 100%;
-      padding: 12px 16px;
-      background: #F5F5FF;
-      border: 1px solid rgba(108,99,255,0.15);
-      border-radius: 12px;
-      color: #1A1A2E;
-      font-size: 14px; font-family: inherit;
+      padding: 16px 20px;
+      background: #FFFFFF;
+      border: 1.5px solid #E2E5DE;
+      border-radius: 16px;
+      color: #10231B;
+      font-size: 15px;
+      font-family: inherit;
       outline: none;
       transition: all 0.15s;
     }
 
     .form-group input:focus {
-      border-color: #6C63FF;
-      box-shadow: 0 0 0 3px rgba(108,99,255,0.1);
-      background: #fff;
+      border-color: #16A34A;
+      box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.1);
     }
 
-    .form-group input::placeholder { color: #AEAEC8; }
+    .form-group input::placeholder { color: #B7BEB3; }
+
+    .toggle-pw {
+      position: absolute;
+      right: 18px; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none;
+      cursor: pointer; color: #8B968F;
+      font-size: 18px; padding: 4px;
+      display: flex; align-items: center;
+    }
 
     .btn-login {
       width: 100%;
-      padding: 14px;
-      background: linear-gradient(135deg, #6C63FF, #5A52E0);
+      padding: 17px;
+      background: #16A34A;
       color: #fff;
       border: none;
-      border-radius: 12px;
-      font-size: 15px; font-weight: 700;
+      border-radius: 16px;
+      font-size: 15.5px;
+      font-weight: 700;
       cursor: pointer;
       font-family: inherit;
       transition: all 0.15s;
       margin-top: 8px;
-      box-shadow: 0 4px 16px rgba(108,99,255,0.3);
+      box-shadow: 0 8px 20px rgba(22, 163, 74, 0.28);
     }
 
-    .btn-login:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-login:hover { background: #128A3E; transform: translateY(-1px); }
     .btn-login:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-    .error-msg {
-      background: rgba(239,68,68,0.08);
-      border: 1px solid rgba(239,68,68,0.2);
-      color: #EF4444;
-      padding: 12px 16px;
-      border-radius: 10px;
-      font-size: 13px;
-      margin-bottom: 20px;
-      display: none;
-    }
-
-    .footer-text {
-      text-align: center;
-      font-size: 12px;
-      color: #AEAEC8;
-      margin-top: 28px;
-    }
 
     .spinner {
       display: inline-block;
-      width: 16px; height: 16px;
-      border: 2px solid rgba(255,255,255,0.3);
+      width: 15px; height: 15px;
+      border: 2px solid rgba(255,255,255,0.35);
       border-top-color: #fff;
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
       vertical-align: middle;
       margin-right: 8px;
     }
-
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* RIGHT PANEL — BRAND */
+    .login-right {
+      width: 42%;
+      background: linear-gradient(160deg, #0E2E22, #0A241B);
+      color: #fff;
+      padding: 48px 44px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2.5px;
+      color: rgba(255,255,255,0.45);
+      text-transform: uppercase;
+    }
+
+    .right-tagline {
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      line-height: 1.25;
+      margin: auto 0;
+    }
+    .right-tagline .accent { color: #4ADE80; }
+
+    .stat-row {
+      display: flex;
+      gap: 36px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,0.14);
+    }
+
+    .stat-block { display: flex; flex-direction: column; gap: 6px; }
+    .stat-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
+      letter-spacing: 1.2px;
+      color: rgba(255,255,255,0.4);
+      text-transform: uppercase;
+    }
+    .stat-value { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+    .stat-value.accent { color: #4ADE80; }
+
+    @media (max-width: 860px) {
+      .login-shell { flex-direction: column; min-height: unset; border-radius: 24px; }
+      .login-right { width: 100%; order: -1; padding: 36px 28px; min-height: 220px; }
+      .login-left { padding: 40px 28px; }
+      .login-heading { font-size: 30px; }
+      .right-tagline { font-size: 22px; margin: 20px 0; }
+      .stat-row { gap: 24px; }
+    }
   </style>
 </head>
 <body>
-  <div class="login-wrapper">
-    <div class="login-logo">
-      <div class="logo-mark">T</div>
-      <h1>TRACKPO</h1>
-      <p>Dashboard Reporting — Aipromarketing</p>
-    </div>
+  <div class="login-shell">
+    <div class="login-left">
+      <div class="brand-row">
+        <div class="brand-mark">T</div>
+        <div>
+          <div class="brand-name">Trackpo</div>
+          <div class="brand-sub">by Aipromarketing</div>
+        </div>
+      </div>
 
-    <div class="login-card">
-      <h2>Selamat Datang 👋</h2>
-      <p>Masukkan maklumat log masuk anda</p>
+      <h1 class="login-heading">Selamat kembali</h1>
+      <p class="login-sub">Log masuk untuk lihat prestasi iklan dan jualan anda.</p>
 
-      <div class="error-msg" id="errorMsg"></div>
+      <div class="error-msg" id="errorMsg">
+        <span class="err-icon">!</span>
+        <span id="errorMsgText"></span>
+      </div>
 
       <div class="form-group">
         <label>Email / Username</label>
@@ -179,25 +263,46 @@
 
       <div class="form-group">
         <label>Password</label>
-        <input type="password" id="inputPassword" placeholder="••••••••" autocomplete="current-password" />
+        <div class="input-wrap">
+          <input type="password" id="inputPassword" placeholder="••••••••" autocomplete="current-password" />
+        </div>
       </div>
 
       <button class="btn-login" id="btnLogin" onclick="handleLogin()">Log Masuk</button>
     </div>
 
-    <p class="footer-text">TRACKPO v2 &copy; 2026 Aipromarketing</p>
+    <div class="login-right">
+      <div class="eyebrow">Dashboard Reporting</div>
+      <div class="right-tagline">Semua nombor <span class="accent">kempen</span> anda dalam satu tempat.</div>
+      <div class="stat-row">
+        <div class="stat-block">
+          <div class="stat-label">Ad Spend</div>
+          <div class="stat-value">RM 4,280</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-label">Lead</div>
+          <div class="stat-value">312</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-label">ROAS</div>
+          <div class="stat-value accent">3.92x</div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const SUPABASE_URL = 'https://dhyddyhbpmzstbhrsgrq.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRoeWRkeWhicG16c3RiaHJzZ3JxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5MDg5MDMsImV4cCI6MjA5OTQ4NDkwM30.czIG6b_zWhZlFj3MNfFVv6Yb65cL5DD_7yLmV37rFCM';    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRoeWRkeWhicG16c3RiaHJzZ3JxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5MDg5MDMsImV4cCI6MjA5OTQ4NDkwM30.czIG6b_zWhZlFj3MNfFVv6Yb65cL5DD_7yLmV37rFCM';
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     async function handleLogin() {
       const input = document.getElementById('inputLogin').value.trim();
       const password = document.getElementById('inputPassword').value;
       const btn = document.getElementById('btnLogin');
       const errorMsg = document.getElementById('errorMsg');
+      const errorMsgText = document.getElementById('errorMsgText');
 
       errorMsg.style.display = 'none';
       if (!input || !password) { showError('Sila isi semua maklumat.'); return; }
@@ -223,8 +328,9 @@
 
     function showError(msg) {
       const el = document.getElementById('errorMsg');
-      el.textContent = msg;
-      el.style.display = 'block';
+      const textEl = document.getElementById('errorMsgText');
+      textEl.textContent = msg;
+      el.style.display = 'flex';
     }
 
     document.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleLogin(); });
