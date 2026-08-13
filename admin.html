@@ -20,6 +20,19 @@
 </head>
 <body>
 
+<!-- ICON SPRITE -->
+<svg style="display:none;">
+  <symbol id="ic-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></symbol>
+  <symbol id="ic-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="ic-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="ic-list" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></symbol>
+  <symbol id="ic-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
+  <symbol id="ic-log-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol>
+  <symbol id="ic-alert-triangle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></symbol>
+  <symbol id="ic-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+  <symbol id="ic-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+</svg>
+
 <div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div></div>
 <div class="toast-container" id="toastContainer"></div>
 
@@ -36,19 +49,19 @@
     </div>
     <ul class="sidebar-nav">
       <li><a href="#" class="active" onclick="showAdminSection('dashboard')" title="Dashboard">
-        <span class="nav-icon">🏠</span>
+        <svg class="ic"><use href="#ic-home"/></svg>
       </a></li>
       <li><a href="#" onclick="showAdminSection('clients')" title="Manage Client">
-        <span class="nav-icon">👥</span>
+        <svg class="ic"><use href="#ic-users"/></svg>
       </a></li>
       <li><a href="#" onclick="showAdminSection('users')" title="Manage User">
-        <span class="nav-icon">👤</span>
+        <svg class="ic"><use href="#ic-user"/></svg>
       </a></li>
       <li><a href="#" onclick="showAdminSection('log')" title="Log Aktiviti">
-        <span class="nav-icon">📋</span>
+        <svg class="ic"><use href="#ic-list"/></svg>
       </a></li>
       <li><a href="#" onclick="showAdminSection('settings')" title="Settings">
-        <span class="nav-icon">⚙️</span>
+        <svg class="ic"><use href="#ic-settings"/></svg>
       </a></li>
     </ul>
     <div class="sidebar-user">
@@ -78,24 +91,24 @@
           <button class="btn-logout admin-btn-desktop" onclick="logout()">Log Keluar</button>
           <!-- Mobile icon buttons -->
           <button class="admin-icon-btn admin-btn-mobile" onclick="openAddClientModal()" title="Tambah Client">＋</button>
-          <button class="admin-icon-btn admin-btn-mobile" onclick="logout()" title="Log Keluar">📲</button>
+          <button class="admin-icon-btn admin-btn-mobile" onclick="logout()" title="Log Keluar"><svg class="ic"><use href="#ic-log-out"/></svg></button>
         </div>
       </div>
 
       <!-- Stats Bar -->
       <div class="admin-stats-bar">
         <div class="admin-stat-card stat-purple">
-          <div class="stat-icon">👥</div>
+          <div class="stat-icon"><svg class="ic"><use href="#ic-users"/></svg></div>
           <div class="admin-stat-value" id="statTotalClient">-</div>
           <div class="admin-stat-label">Client Aktif</div>
         </div>
         <div class="admin-stat-card stat-red">
-          <div class="stat-icon">⚠️</div>
+          <div class="stat-icon"><svg class="ic"><use href="#ic-alert-triangle"/></svg></div>
           <div class="admin-stat-value" id="statAlerts">-</div>
           <div class="admin-stat-label">Ada Alert</div>
         </div>
         <div class="admin-stat-card stat-orange clickable" onclick="openStaleModal()" title="Klik untuk tengok senarai">
-          <div class="stat-icon">🕐</div>
+          <div class="stat-icon"><svg class="ic"><use href="#ic-clock"/></svg></div>
           <div class="admin-stat-value" id="statStale">-</div>
           <div class="admin-stat-label">Data Tak Kemaskini</div>
           <div class="stat-click-hint">Klik untuk lihat →</div>
@@ -105,7 +118,7 @@
       <!-- Client Grid -->
       <div class="client-grid" id="clientGrid">
         <div class="empty-state">
-          <div class="empty-state-icon">👥</div>
+          <div class="empty-state-icon"><svg class="ic ic-empty"><use href="#ic-users"/></svg></div>
           <div class="empty-state-text">Memuatkan...</div>
         </div>
       </div>
@@ -245,19 +258,19 @@
 <!-- BOTTOM NAV (Mobile) -->
 <nav class="bottom-nav">
   <a class="nav-item active" onclick="showAdminSection('dashboard')">
-    <span class="nav-icon">🏠</span><span>Dashboard</span>
+    <svg class="ic"><use href="#ic-home"/></svg><span>Dashboard</span>
   </a>
   <a class="nav-item" onclick="showAdminSection('clients')">
-    <span class="nav-icon">👥</span><span>Client</span>
+    <svg class="ic"><use href="#ic-users"/></svg><span>Client</span>
   </a>
   <a class="nav-item" onclick="showAdminSection('users')">
-    <span class="nav-icon">👤</span><span>User</span>
+    <svg class="ic"><use href="#ic-user"/></svg><span>User</span>
   </a>
   <a class="nav-item" onclick="showAdminSection('log')">
-    <span class="nav-icon">📋</span><span>Log</span>
+    <svg class="ic"><use href="#ic-list"/></svg><span>Log</span>
   </a>
   <a class="nav-item" onclick="showAdminSection('settings')">
-    <span class="nav-icon">⚙️</span><span>Settings</span>
+    <svg class="ic"><use href="#ic-settings"/></svg><span>Settings</span>
   </a>
 </nav>
 
@@ -445,7 +458,7 @@
   <div class="modal-sheet">
     <div class="modal-handle"></div>
     <div class="modal-header">
-      <span class="modal-title">🕐 Data Tak Kemaskini</span>
+      <span class="modal-title"><svg class="ic ic-inline"><use href="#ic-clock"/></svg> Data Tak Kemaskini</span>
       <button class="modal-close" onclick="document.getElementById('modalStaleClients').classList.remove('open')">×</button>
     </div>
     <div id="staleClientsList" style="padding:0 20px 20px;">

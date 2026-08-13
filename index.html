@@ -21,6 +21,38 @@
 </head>
 <body>
 
+<!-- ICON SPRITE -->
+<svg style="display:none;">
+  <symbol id="ic-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></symbol>
+  <symbol id="ic-chart-bar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></symbol>
+  <symbol id="ic-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></symbol>
+  <symbol id="ic-list" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></symbol>
+  <symbol id="ic-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
+  <symbol id="ic-wallet" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></symbol>
+  <symbol id="ic-credit-card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></symbol>
+  <symbol id="ic-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="ic-trending-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></symbol>
+  <symbol id="ic-dollar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></symbol>
+  <symbol id="ic-target" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+  <symbol id="ic-bank" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></symbol>
+  <symbol id="ic-bar-chart-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></symbol>
+  <symbol id="ic-trophy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M17 4h4v2a5 5 0 0 1-5 5M7 4H3v2a5 5 0 0 0 5 5M7 4h10v4a5 5 0 0 1-10 0Z"/></symbol>
+  <symbol id="ic-x-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></symbol>
+  <symbol id="ic-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></symbol>
+  <symbol id="ic-log-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol>
+  <symbol id="ic-alert-triangle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></symbol>
+  <symbol id="ic-alert-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></symbol>
+  <symbol id="ic-inbox" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></symbol>
+  <symbol id="ic-share" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></symbol>
+  <symbol id="ic-file-text" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></symbol>
+  <symbol id="ic-megaphone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-5v12L3 13v-2z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></symbol>
+  <symbol id="ic-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></symbol>
+  <symbol id="ic-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
+  <symbol id="ic-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+  <symbol id="ic-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+  <symbol id="ic-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
+</svg>
+
 <!-- Loading -->
 <div class="loading-overlay" id="loadingOverlay">
   <div class="spinner"></div>
@@ -42,19 +74,19 @@
     </div>
     <ul class="sidebar-nav">
       <li><a href="#" class="active" onclick="showSection('dashboard')" title="Dashboard">
-        <span class="nav-icon">🏠</span>
+        <svg class="ic"><use href="#ic-home"/></svg>
       </a></li>
       <li><a href="#" onclick="showSection('ringkasan')" title="Ringkasan Mingguan">
-        <span class="nav-icon">📊</span>
+        <svg class="ic"><use href="#ic-chart-bar"/></svg>
       </a></li>
       <li><a href="#" onclick="showSection('comparison')" title="Comparison">
-        <span class="nav-icon">🔄</span>
+        <svg class="ic"><use href="#ic-refresh"/></svg>
       </a></li>
       <li><a href="#" onclick="showSection('rekod')" title="Rekod Data">
-        <span class="nav-icon">📋</span>
+        <svg class="ic"><use href="#ic-list"/></svg>
       </a></li>
       <li><a href="#" onclick="showSection('settings')" title="Settings">
-        <span class="nav-icon">⚙️</span>
+        <svg class="ic"><use href="#ic-settings"/></svg>
       </a></li>
     </ul>
     <div class="sidebar-user">
@@ -73,17 +105,17 @@
     <div class="top-header">
       <div class="top-header-left">
         <div class="client-name-big" id="clientNameHeader">-</div>
-        <div class="greeting-sub" id="greetingText">Selamat datang 👋</div>
+        <div class="greeting-sub" id="greetingText">Selamat datang</div>
       </div>
       <div class="top-header-right">
         <div class="icon-btn" id="notifBell" onclick="toggleNotif()">
-          🔔
+          <svg class="ic"><use href="#ic-bell"/></svg>
           <div class="notif-dot hidden" id="notifDot"></div>
         </div>
         <!-- Desktop logout -->
         <button class="btn-logout admin-btn-desktop" onclick="logout()">Log Keluar</button>
         <!-- Mobile logout -->
-        <button class="admin-icon-btn admin-btn-mobile" onclick="logout()" title="Log Keluar">📲</button>
+        <button class="admin-icon-btn admin-btn-mobile" onclick="logout()" title="Log Keluar"><svg class="ic"><use href="#ic-log-out"/></svg></button>
       </div>
     </div>
 
@@ -99,12 +131,12 @@
 
       <!-- Alert Banner -->
       <div class="alert-banner warning hidden" id="alertLeadKosong">
-        <span>⚠️ Tiada lead semalam. Semak kempen iklan anda.</span>
+        <span><svg class="ic ic-inline"><use href="#ic-alert-triangle"/></svg> Tiada lead semalam. Semak kempen iklan anda.</span>
         <button class="alert-dismiss" onclick="this.parentElement.classList.add('hidden')">×</button>
       </div>
 
       <div class="alert-banner danger hidden" id="alertBajetRendah">
-        <span id="alertBajetText">🔴 Balance bajet rendah.</span>
+        <span id="alertBajetText"><svg class="ic ic-inline"><use href="#ic-alert-circle"/></svg> Balance bajet rendah.</span>
         <button class="alert-dismiss" onclick="this.parentElement.classList.add('hidden')">×</button>
       </div>
 
@@ -114,30 +146,30 @@
         <!-- Date Dropdown -->
         <div class="filter-dropdown-wrap" id="filterDropdownWrap">
           <button class="filter-dropdown-btn" id="filterDropdownBtn" onclick="toggleFilterDropdown()">
-            <span id="filterDropdownLabel">📅 Bulan Ini</span>
+            <span id="filterDropdownLabel"><svg class="ic ic-inline"><use href="#ic-calendar"/></svg> Bulan Ini</span>
             <span class="filter-dropdown-arrow">▾</span>
           </button>
           <div class="filter-dropdown-menu" id="filterDropdownMenu">
             <div class="filter-dropdown-item selected" data-filter="harini" onclick="setFilterDrop('harini','⏰ Harini')">
-              ⏰ Harini <span class="check">✓</span>
+              <svg class="ic ic-inline"><use href="#ic-clock"/></svg> Harini <span class="check"><svg class="ic ic-check"><use href="#ic-check"/></svg></span>
             </div>
             <div class="filter-dropdown-item" data-filter="semalam" onclick="setFilterDrop('semalam','📅 Semalam')">
-              📅 Semalam <span class="check">✓</span>
+              <svg class="ic ic-inline"><use href="#ic-calendar"/></svg> Semalam <span class="check"><svg class="ic ic-check"><use href="#ic-check"/></svg></span>
             </div>
             <div class="filter-dropdown-item" data-filter="7hari" onclick="setFilterDrop('7hari','📆 7 Hari')">
-              📆 7 Hari <span class="check">✓</span>
+              <svg class="ic ic-inline"><use href="#ic-calendar"/></svg> 7 Hari <span class="check"><svg class="ic ic-check"><use href="#ic-check"/></svg></span>
             </div>
             <div class="filter-dropdown-item selected" data-filter="bulan-ini" onclick="setFilterDrop('bulan-ini','📅 Bulan Ini')">
-              📅 Bulan Ini <span class="check">✓</span>
+              <svg class="ic ic-inline"><use href="#ic-calendar"/></svg> Bulan Ini <span class="check"><svg class="ic ic-check"><use href="#ic-check"/></svg></span>
             </div>
             <div class="filter-dropdown-item" data-filter="bulan-lepas" onclick="setFilterDrop('bulan-lepas','◀ Bulan Lepas')">
-              ◀ Bulan Lepas <span class="check">✓</span>
+              <svg class="ic ic-inline"><use href="#ic-calendar"/></svg> Bulan Lepas <span class="check"><svg class="ic ic-check"><use href="#ic-check"/></svg></span>
             </div>
             <div class="filter-dropdown-item" data-filter="semua" onclick="setFilterDrop('semua','∞ Semua')">
-              ∞ Semua <span class="check">✓</span>
+              <svg class="ic ic-inline"><use href="#ic-refresh"/></svg> Semua <span class="check"><svg class="ic ic-check"><use href="#ic-check"/></svg></span>
             </div>
             <div class="filter-dropdown-item" data-filter="custom" onclick="setFilterDrop('custom','🗓 Custom')">
-              🗓 Custom <span class="check">✓</span>
+              <svg class="ic ic-inline"><use href="#ic-calendar"/></svg> Custom <span class="check"><svg class="ic ic-check"><use href="#ic-check"/></svg></span>
             </div>
           </div>
         </div>
@@ -173,7 +205,7 @@
 
         <div class="kpi-card">
           <div class="kpi-card-header">
-            <div class="kpi-icon purple">💰</div>
+            <div class="kpi-icon purple"><svg class="ic"><use href="#ic-wallet"/></svg></div>
             <div class="kpi-change neutral" id="kpiAdSpendChange">—</div>
           </div>
           <div class="kpi-label">Ad Spend</div>
@@ -183,7 +215,7 @@
 
         <div class="kpi-card">
           <div class="kpi-card-header">
-            <div class="kpi-icon orange">💳</div>
+            <div class="kpi-icon orange"><svg class="ic"><use href="#ic-credit-card"/></svg></div>
             <div class="kpi-change neutral" id="kpiAdSpendSSTChange">—</div>
           </div>
           <div class="kpi-label">Ad Spend+SST</div>
@@ -193,7 +225,7 @@
 
         <div class="kpi-card">
           <div class="kpi-card-header">
-            <div class="kpi-icon blue">👥</div>
+            <div class="kpi-icon blue"><svg class="ic"><use href="#ic-users"/></svg></div>
             <div class="kpi-change neutral" id="kpiLeadChange">—</div>
           </div>
           <div class="kpi-label">Lead</div>
@@ -204,7 +236,7 @@
 
         <div class="kpi-card">
           <div class="kpi-card-header">
-            <div class="kpi-icon purple">📉</div>
+            <div class="kpi-icon purple"><svg class="ic"><use href="#ic-trending-down"/></svg></div>
             <div class="kpi-change neutral" id="kpiCPLChange">—</div>
           </div>
           <div class="kpi-label">CPL Real</div>
@@ -215,7 +247,7 @@
 
         <div class="kpi-card featured" id="kpiCardSale">
           <div class="kpi-card-header">
-            <div class="kpi-icon green">💵</div>
+            <div class="kpi-icon green"><svg class="ic"><use href="#ic-dollar"/></svg></div>
             <div class="kpi-change neutral" id="kpiSaleChange">—</div>
           </div>
           <div class="kpi-label">Total Sale</div>
@@ -228,7 +260,7 @@
 
         <div class="kpi-card" id="kpiCardClosing">
           <div class="kpi-card-header">
-            <div class="kpi-icon teal">🎯</div>
+            <div class="kpi-icon teal"><svg class="ic"><use href="#ic-target"/></svg></div>
             <div class="kpi-change neutral" id="kpiClosingChange">—</div>
           </div>
           <div class="kpi-label">Closing Rate</div>
@@ -241,7 +273,7 @@
 
         <div class="kpi-card">
           <div class="kpi-card-header">
-            <div class="kpi-icon red">🏦</div>
+            <div class="kpi-icon red"><svg class="ic"><use href="#ic-bank"/></svg></div>
             <div id="kpiBalanceBadge"></div>
           </div>
           <div class="kpi-label">Balance Bajet</div>
@@ -250,7 +282,7 @@
 
         <div class="kpi-card" id="kpiCardROAS">
           <div class="kpi-card-header">
-            <div class="kpi-icon blue">📊</div>
+            <div class="kpi-icon blue"><svg class="ic"><use href="#ic-bar-chart-2"/></svg></div>
             <div id="kpiROASBadge"></div>
           </div>
           <div class="kpi-label">ROAS</div>
@@ -282,7 +314,7 @@
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;" class="two-col-section">
         <div class="card">
           <div class="section-header">
-            <span class="section-title">🏆 Hari Terbaik</span>
+            <span class="section-title"><svg class="ic ic-inline"><use href="#ic-trophy"/></svg> Hari Terbaik</span>
           </div>
           <div class="best-day-list" id="bestDayList">
             <div class="empty-state"><div class="empty-state-text">Tiada data</div></div>
@@ -291,7 +323,7 @@
 
         <div class="card">
           <div class="section-header">
-            <span class="section-title">❌ Sebab Tak Close</span>
+            <span class="section-title"><svg class="ic ic-inline"><use href="#ic-x-circle"/></svg> Sebab Tak Close</span>
           </div>
           <div id="sebabChartContainer" style="min-height:60px;">
             <canvas id="sebabChart"></canvas>
@@ -302,7 +334,7 @@
       <!-- BAJET SECTION -->
       <div class="card">
         <div class="section-header">
-          <span class="section-title">💰 Bajet Iklan</span>
+          <span class="section-title"><svg class="ic ic-inline"><use href="#ic-wallet"/></svg> Bajet Iklan</span>
           <span id="bajetAdminBtn" class="hidden">
             <button class="btn btn-primary" style="font-size:12px;padding:8px 14px;" onclick="openTopupModal()">Topup</button>
           </span>
@@ -334,7 +366,7 @@
         <!-- CARDS SALE -->
         <div id="tableSaleSection">
           <div id="tableSaleBody">
-            <div class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-text">Tiada data</div></div>
+            <div class="empty-state"><div class="empty-state-icon"><svg class="ic ic-empty"><use href="#ic-inbox"/></svg></div><div class="empty-state-text">Tiada data</div></div>
           </div>
           <div class="pagination" id="paginationSale"></div>
         </div>
@@ -342,7 +374,7 @@
         <!-- CARDS MARKETING -->
         <div id="tableMarketingSection" class="hidden">
           <div id="tableMarketingBody">
-            <div class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-text">Tiada data</div></div>
+            <div class="empty-state"><div class="empty-state-icon"><svg class="ic ic-empty"><use href="#ic-inbox"/></svg></div><div class="empty-state-text">Tiada data</div></div>
           </div>
           <div class="pagination" id="paginationMarketing"></div>
         </div>
@@ -354,7 +386,7 @@
     <section id="sectionRingkasan" class="hidden">
       <div class="card">
         <div class="section-header">
-          <span class="section-title">📊 Ringkasan Mingguan</span>
+          <span class="section-title"><svg class="ic ic-inline"><use href="#ic-chart-bar"/></svg> Ringkasan Mingguan</span>
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:20px;">
           <input type="date" id="weekStart" style="padding:8px 12px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:10px;color:var(--text-primary);font-family:inherit;" />
@@ -388,7 +420,7 @@
         </div>
 
         <button class="btn btn-primary btn-full" onclick="shareWA()" style="margin-top:8px;">
-          📱 Share via WhatsApp
+          <svg class="ic ic-inline"><use href="#ic-share"/></svg> Share via WhatsApp
         </button>
       </div>
     </section>
@@ -397,7 +429,7 @@
     <section id="sectionComparison" class="hidden">
       <div class="card">
         <div class="section-header">
-          <span class="section-title">🔄 Comparison Mode</span>
+          <span class="section-title"><svg class="ic ic-inline"><use href="#ic-refresh"/></svg> Comparison Mode</span>
         </div>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
@@ -434,7 +466,7 @@
     <!-- ==================== SECTION: REKOD DATA ==================== -->
     <section id="sectionRekod" class="hidden">
       <div class="top-bar">
-        <div class="client-name-header">📋 Rekod Data</div>
+        <div class="client-name-header"><svg class="ic ic-inline"><use href="#ic-list"/></svg> Rekod Data</div>
       </div>
 
       <!-- Filter -->
@@ -565,7 +597,7 @@
       <div class="settings-section">
         <div class="settings-title">Export</div>
         <button class="btn btn-primary btn-full" onclick="exportPDF()" style="margin-bottom:16px;">
-          📄 Download PDF Report
+          <svg class="ic ic-inline"><use href="#ic-file-text"/></svg> Download PDF Report
         </button>
 
         <div style="font-size:12px;color:var(--text-secondary);margin-bottom:10px;font-weight:600;">Pilih Tarikh untuk Export CSV</div>
@@ -582,10 +614,10 @@
         </div>
 
         <button class="btn btn-secondary btn-full" onclick="exportSaleCSV()" style="margin-bottom:10px;">
-          📊 Export CSV — Data Sale
+          <svg class="ic ic-inline"><use href="#ic-bar-chart-2"/></svg> Export CSV — Data Sale
         </button>
         <button class="btn btn-secondary btn-full" onclick="exportMarketingCSV()">
-          📊 Export CSV — Data Marketing
+          <svg class="ic ic-inline"><use href="#ic-bar-chart-2"/></svg> Export CSV — Data Marketing
         </button>
       </div>
     </section>
@@ -597,20 +629,20 @@
 <!-- BOTTOM NAV (Mobile) -->
 <nav class="bottom-nav">
   <a class="nav-item active" onclick="showSection('dashboard')">
-    <span class="nav-icon">🏠</span>
+    <svg class="ic"><use href="#ic-home"/></svg>
     <span>Dashboard</span>
   </a>
   <a class="nav-item" onclick="showSection('ringkasan')">
-    <span class="nav-icon">📊</span>
+    <svg class="ic"><use href="#ic-chart-bar"/></svg>
     <span>Ringkasan</span>
   </a>
   <button class="nav-fab-item" id="navFabBtn" onclick="openFabMenu()">+</button>
   <a class="nav-item" onclick="showSection('rekod')">
-    <span class="nav-icon">📋</span>
+    <svg class="ic"><use href="#ic-list"/></svg>
     <span>Rekod</span>
   </a>
   <a class="nav-item" onclick="showSection('settings')">
-    <span class="nav-icon">⚙️</span>
+    <svg class="ic"><use href="#ic-settings"/></svg>
     <span>Settings</span>
   </a>
 </nav>
@@ -620,15 +652,15 @@
   <div class="fab-menu" id="fabMenu">
     <div class="fab-item" id="fabSaleItem">
       <span class="fab-item-label">Tambah Data Sale</span>
-      <button class="fab-item-btn" onclick="openSaleModal()">💰</button>
+      <button class="fab-item-btn" onclick="openSaleModal()"><svg class="ic"><use href="#ic-wallet"/></svg></button>
     </div>
     <div class="fab-item hidden" id="fabMarketingItem">
       <span class="fab-item-label">Tambah Data Marketing</span>
-      <button class="fab-item-btn" onclick="openMarketingModal()">📣</button>
+      <button class="fab-item-btn" onclick="openMarketingModal()"><svg class="ic"><use href="#ic-megaphone"/></svg></button>
     </div>
     <div class="fab-item hidden" id="fabTopupItem">
       <span class="fab-item-label">Topup Bajet</span>
-      <button class="fab-item-btn" onclick="openTopupModal()">💳</button>
+      <button class="fab-item-btn" onclick="openTopupModal()"><svg class="ic"><use href="#ic-credit-card"/></svg></button>
     </div>
   </div>
   <button class="fab-main" id="fabMain" onclick="toggleFAB()">+</button>
