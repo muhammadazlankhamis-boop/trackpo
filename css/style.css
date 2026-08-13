@@ -32,7 +32,7 @@ body {
 /* ===== SIDEBAR — ICON-ONLY PILL ===== */
 .sidebar {
   width: var(--sidebar-w);
-  background: var(--bg-sidebar);
+  background: var(--bg-card);
   border-radius: 28px;
   position: sticky;
   top: 20px;
@@ -43,6 +43,7 @@ body {
   z-index: 100;
   padding: 20px 0;
   flex-shrink: 0;
+  box-shadow: var(--shadow-md);
 }
 
 .sidebar-logo { margin-bottom: 24px; }
@@ -125,12 +126,15 @@ body {
   border-bottom: none;
 }
 
-.top-header-left { display: flex; flex-direction: column-reverse; gap: 4px; }
+.top-header-left { display: flex; flex-direction: column-reverse; gap: 0px; }
 
 .greeting-sub {
-  font-size: 13.5px;
+  font-size: 14px;
   color: var(--text-secondary);
+  font-weight: 500;
+  text-transform: lowercase;
 }
+.greeting-sub::first-letter { text-transform: uppercase; }
 
 .client-name-big {
   font-size: 30px;
