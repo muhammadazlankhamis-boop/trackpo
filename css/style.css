@@ -22,6 +22,7 @@ body {
 /* ===== APP LAYOUT ===== */
 .app-layout {
   display: flex;
+  align-items: flex-start;
   min-height: 100vh;
   max-width: 100vw;
   overflow-x: hidden;
